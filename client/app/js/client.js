@@ -1,7 +1,14 @@
 'use strict';
 const angular = require('angular');
-const app = angular.module('app', []);
-
+require('angular-ui-router');
+const app = angular.module('app', ['ui.router']);
+app.config('$stateProvider', '$urlRouterProvider', '$locationProvider', function($stateProvider, $urlRouterProvider, $locationProvider) {
+  $urlRouterProvider.otherwise('/overview');
+  $stateProvider
+    .state('overview', { url: '/overview', templateUrl: 'templates/overview.html' })
+    .state('customer', { url: '/customer', templateUrl: 'templates/customer.html' });
+  $locationProvider.html5Mode(true);
+});
 require('./services')(app);
 require('./controllers')(app);
 require('./directives')(app);

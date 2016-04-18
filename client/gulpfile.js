@@ -7,11 +7,7 @@ const imageOptimization = require('gulp-image-optimization');
 const path = require('path');
 gulp.task('webpack:dev', () => {
   return gulp.src(path.join(__dirname, 'app', 'js', 'client.js'), { read: true })
-    .pipe(webpack({
-      output: {
-        filename: 'bundle.min.js'
-      }
-    }))
+    .pipe(webpack({ output: { filename: 'bundle.min.js' } }))
     .pipe(plugins.concat('bundle.min.js'))
     .pipe(plugins.uglify())
     .pipe(gulp.dest(path.join(__dirname, '..', 'server', 'build', 'js')));
@@ -45,23 +41,12 @@ gulp.task('fonts:dev', () => {
 });
 gulp.task('images:dev', function() {
   return gulp.src(path.join(__dirname, 'app', 'images', '*'))
-    .pipe(imageOptimization({
-      optimizationLevel: 7,
-      progressive: true,
-      interlaced: true
-    }))
+    .pipe(imageOptimization({ optimizationLevel: 7, progressive: true, interlaced: true }))
     .pipe(gulp.dest(path.join(__dirname, '..', 'server', 'build', 'images')));
 });
-gulp.task('content:dev' () => {
+gulp.task('content:dev', () => {
   return gulp.src(path.join(__dirname, 'app', 'content', '*'))
     .pipe(gulp.dest(path.join(__dirname, '..', 'server', 'build', 'content')));
 });
-gulp.task('build:dev', [
-  'webpack:dev',
-  'html:dev',
-  'fonts:dev',
-  'css:dev',
-  'images:dev',
-  'content:dev'
-]);
+gulp.task('build:dev', ['webpack:dev', 'html:dev', 'fonts:dev', 'css:dev', 'images:dev', 'content:dev']);
 gulp.task('default', ['build:dev']);
