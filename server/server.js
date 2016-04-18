@@ -4,6 +4,8 @@ var dataRoutes = require(__dirname + '/lib/routes/dataRoutes');
 app.use(express.static(__dirname + '/build'));
 app.use(favicon(path.join(__dirname, 'build', 'images', 'favicon.ico')));
 app.use('/api', dataRoutes);
+app.use('/:url', (req, res) => res.redirect('/#/' + req.params.url));
+app.use('*', (req, res) => res.redirect('/'));
 const port = process.env.PORT || 5000;
 app.listen(port);
 module.exports = exports = app;
