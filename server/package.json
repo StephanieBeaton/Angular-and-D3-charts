@@ -1,0 +1,16 @@
+{
+  "name": "fasterbids-dashboard",
+  "version": "1.0.0",
+  "description": "Fasterbids client dashboard webserver.",
+  "main": "server.js",
+  "directories": {},
+  "scripts": {
+    "start": "node server"
+  },
+  "author": "",
+  "dependencies": {
+    "express": "^4.13.4",
+    "serve-favicon": "^2.3.0"
+  },
+  "devDependencies": {}
+}
