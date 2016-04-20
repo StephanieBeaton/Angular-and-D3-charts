@@ -1,1 +1,50 @@
-[{"Totals":{},"Name":"mail Test","Id":5},{"Totals":{"Exterior":13887.15,"Window":16777.215,"Interior":3026.09,"Decking":6840.50,"Skylight":3985.43,"Moulding":1721.83,"Siding":202.89},"Name":"Test User","Id":7},{"Totals":{"Skylight":157.84,"Window":6978.520},"Name":"Jason Lindquist","Id":94},{"Totals":{},"Name":"Jason Parchomchuk","Id":262},{"Totals":{"Interior":446.32,"Moulding":83.20,"Window":202.0,"Skylight":207.00},"Name":"Jason Lindquist","Id":300},{"Totals":{"Siding":3.87},"Name":"Jonny Tester","Id":301}]
+[
+  {
+    "Totals": {},
+    "Name": "mail Test",
+    "Id": 5
+  },
+  {
+    "Totals": {
+      "Exterior": 13887.15,
+      "Window": 16777.215,
+      "Interior": 3026.09,
+      "Decking": 6840.5,
+      "Skylight": 3985.43,
+      "Moulding": 1721.83,
+      "Siding": 202.89
+    },
+    "Name": "Test User",
+    "Id": 7
+  },
+  {
+    "Totals": {
+      "Skylight": 157.84,
+      "Window": 6978.52
+    },
+    "Name": "Jason Lindquist",
+    "Id": 94
+  },
+  {
+    "Totals": {},
+    "Name": "Jason Parchomchuk",
+    "Id": 262
+  },
+  {
+    "Totals": {
+      "Interior": 446.32,
+      "Moulding": 83.2,
+      "Window": 202,
+      "Skylight": 207
+    },
+    "Name": "Jason Lindquist",
+    "Id": 300
+  },
+  {
+    "Totals": {
+      "Siding": 3.87
+    },
+    "Name": "Jonny Tester",
+    "Id": 301
+  }
+]
