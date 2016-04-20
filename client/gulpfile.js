@@ -44,9 +44,9 @@ gulp.task('images:dev', function() {
     .pipe(imageOptimization({ optimizationLevel: 7, progressive: true, interlaced: true }))
     .pipe(gulp.dest(path.join(__dirname, '..', 'server', 'build', 'images')));
 });
-gulp.task('content:dev', () => {
-  return gulp.src(path.join(__dirname, 'app', 'content', '*'))
-    .pipe(gulp.dest(path.join(__dirname, '..', 'server', 'build', 'content')));
+gulp.task('data:dev', () => {
+  return gulp.src(path.join(__dirname, 'app', 'data', '*'))
+    .pipe(gulp.dest(path.join(__dirname, '..', 'server', 'build', 'data')));
 });
-gulp.task('build:dev', ['webpack:dev', 'html:dev', 'fonts:dev', 'css:dev', 'images:dev', 'content:dev']);
+gulp.task('build:dev', ['webpack:dev', 'html:dev', 'fonts:dev', 'css:dev', 'data:dev', 'images:dev']);
 gulp.task('default', ['build:dev']);
