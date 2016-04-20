@@ -5,6 +5,16 @@ const gulpLoadPlugins = require('gulp-load-plugins');
 const plugins = gulpLoadPlugins();
 const imageOptimization = require('gulp-image-optimization');
 const path = require('path');
+
+const paths = {
+  js: path.join(__dirname, 'app', 'js', '**', '*.js'),
+  html: path.join(__dirname, 'app', '**', '*.html'),
+  css: path.join(__dirname, 'app', 'css', '**', '*.scss'),
+  fonts: path.join(__dirname, 'app', 'css', 'fonts', '**', '*'),
+  images: path.join(__dirname, 'app', 'images', '*'),
+  data: path.join(__dirname, 'app', 'data', '*')
+}
+
 gulp.task('webpack:dev', () => {
   return gulp.src(path.join(__dirname, 'app', 'js', 'client.js'), { read: true })
     .pipe(webpack({ output: { filename: 'bundle.min.js' } }))
@@ -48,5 +58,26 @@ gulp.task('data:dev', () => {
   return gulp.src(path.join(__dirname, 'app', 'data', '*'))
     .pipe(gulp.dest(path.join(__dirname, '..', 'server', 'build', 'data')));
 });
+
+gulp.task('watch:css', () => {
+  gulp.watch(paths.css, ['css:dev'])
+})
+gulp.task('watch:html', () => {
+  gulp.watch(paths.html, ['html:dev'])
+})
+gulp.task('watch:js', () => {
+  gulp.watch(paths.js, ['webpack:dev'])
+})
+gulp.task('watch:fonts', () => {
+  gulp.watch(paths.fonts, ['fonts:dev'])
+})
+gulp.task('watch:images', () => {
+  gulp.watch(paths.images, ['images:dev'])
+})
+gulp.task('watch:data', () => {
+  gulp.watch(paths.data, ['data:dev'])
+})
+
+gulp.task('watch:all', ['watch:css', 'watch:html', 'watch:js', 'watch:fonts', 'watch:images', 'watch:data'])
 gulp.task('build:dev', ['webpack:dev', 'html:dev', 'fonts:dev', 'css:dev', 'data:dev', 'images:dev']);
-gulp.task('default', ['build:dev']);
+gulp.task('default', ['build:dev', 'watch:all']);
