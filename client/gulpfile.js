@@ -34,8 +34,7 @@ gulp.task('css:dev', () => {
     require('postcss-font-magician'),
     require('autoprefixer'),
     require('css-mqpacker'),
-    require('csswring'),
-    require('colorguard')
+    require('csswring')
   ];
   return gulp.src(path.join(__dirname, 'app', 'css', '**', '*.scss'))
     .pipe(plugins.sourcemaps.init())
