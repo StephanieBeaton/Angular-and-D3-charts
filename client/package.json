@@ -32,6 +32,7 @@
     "webpack-stream": "^3.1.0"
   },
   "dependencies": {
+    "d3-tip": "^0.6.7",
     "express": "^4.13.4"
   }
 }

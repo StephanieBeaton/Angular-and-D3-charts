@@ -7,6 +7,33 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 		<title>Fasterbids - Dashboard</title>
 		<link rel="stylesheet" href="css/style.css" media="all" type="text/css">
+		<style>
+
+        body {
+          font: 10px sans-serif;
+        }
+
+        .axis path,
+        .axis line {
+          fill: none;
+          stroke: #000;
+          shape-rendering: crispEdges;
+        }
+
+        .bar {
+          fill: steelblue;
+        }
+
+        .x.axis path {
+          display: none;
+        }
+
+        .salesperson text {
+          fill: black;
+          font: 10px sans-serif;
+          text-anchor: end;
+        }
+    </style>
 	</head>
 	<body data-ng-app="app">
 	  <main data-ng-controller="appController" data-ng-init="">
@@ -15,6 +42,7 @@
 				<ul>
 					<li data-ui-sref="overview"><a href="#/overview">Company Overview</a></li>
 					<li data-ui-sref="customer"><a href="#/customer">Customer Overview</a></li>
+					<li data-ui-sref="salespeople"><a href="#/salespeople">Salespeople</a></li>
 				</ul>
 			</header>
 			<section data-ui-view></section>

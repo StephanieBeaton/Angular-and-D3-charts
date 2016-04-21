@@ -19,7 +19,7 @@ gulp.task('webpack:dev', () => {
   return gulp.src(path.join(__dirname, 'app', 'js', 'client.js'), { read: true })
     .pipe(webpack({ output: { filename: 'bundle.min.js' } }))
     .pipe(plugins.concat('bundle.min.js'))
-    .pipe(plugins.uglify())
+    //.pipe(plugins.uglify())
     .pipe(gulp.dest(path.join(__dirname, '..', 'server', 'build', 'js')));
 });
 gulp.task('html:dev', () => {
