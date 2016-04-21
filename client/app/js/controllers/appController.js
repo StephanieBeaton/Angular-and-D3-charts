@@ -28,7 +28,6 @@ module.exports = exports = function(app) {
        $scope.d3Object = D3('bar', 500, 500, overviewResource, 1000);
        $scope.d3Object.create();
        $scope.d3Object.startUpdates();
-       // ex: $scope.d3Object = D3('bar', 300, 300, customerResource, 500);
      }
    });
   }]);

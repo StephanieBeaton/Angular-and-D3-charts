@@ -40,6 +40,7 @@ gulp.task('css:dev', () => {
     .pipe(plugins.sourcemaps.init())
     .pipe(plugins.sass().on('error', plugins.sass.logError))
     .pipe(plugins.postcss(processors))
+    .pipe(plugins.uncss({ html: [path.join(__dirname, 'app', 'index.html'), path.join(__dirname, 'app', 'templates', '*.html')] }))
     .pipe(plugins.cssnano())
     .pipe(plugins.sourcemaps.write('.'))
     .pipe(gulp.dest(path.join(__dirname, '..', 'server', 'build', 'css')));
@@ -60,22 +61,22 @@ gulp.task('data:dev', () => {
 
 gulp.task('watch:css', () => {
   gulp.watch(paths.css, ['css:dev'])
-})
+});
 gulp.task('watch:html', () => {
   gulp.watch(paths.html, ['html:dev'])
-})
+});
 gulp.task('watch:js', () => {
   gulp.watch(paths.js, ['webpack:dev'])
-})
+});
 gulp.task('watch:fonts', () => {
   gulp.watch(paths.fonts, ['fonts:dev'])
-})
+});
 gulp.task('watch:images', () => {
   gulp.watch(paths.images, ['images:dev'])
-})
+});
 gulp.task('watch:data', () => {
   gulp.watch(paths.data, ['data:dev'])
-})
+});
 
 gulp.task('watch:all', ['watch:css', 'watch:html', 'watch:js', 'watch:fonts', 'watch:images', 'watch:data'])
 gulp.task('build:dev', ['webpack:dev', 'html:dev', 'fonts:dev', 'css:dev', 'data:dev', 'images:dev']);
