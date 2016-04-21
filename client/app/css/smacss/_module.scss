@@ -1,0 +1,32 @@
+/* navbar styles */
+#navbar {
+	background-color: salmon;
+	img {
+		height: 100%;
+		margin-top: 8px;
+	}
+	.navbar-brand {
+		padding-top: 0;
+	}
+}
+
+/* side panel styles */
+#dashboard-side-panel {
+	select {
+		border: 4pt solid #CCCCCC;
+		width: 85%;
+		max-width: 250px;
+		height: 50px;
+	}
+	select, input {
+		margin-left: 20px;
+		font-size: 1.4em;
+		margin-bottom: 30px;
+	}
+	p {
+		margin-bottom: 0;
+		padding-left: 20px;
+		color: #AAAAAA;
+		font-size: 1.2em;
+	}
+}

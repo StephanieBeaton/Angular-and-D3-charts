@@ -3,4 +3,5 @@
 **/*.log/**
 **/testBundle.js
 /notes.txt
-server/build/
+**/build/**
+**/bundle*

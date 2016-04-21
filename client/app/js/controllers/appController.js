@@ -32,7 +32,9 @@ module.exports = exports = function(app) {
      } else if ($scope.currentView === 'customer') {
        console.log('Customer page has been loaded into the view.');
        if ($scope.d3Object !== null) $scope.d3Object.stopUpdates();
-       // ex: $scope.d3Object = D3('bar', 300, 300, customerResource, 500);
+       $scope.d3Object = D3('bar', 500, 500, overviewResource, 1000);
+       $scope.d3Object.create();
+       $scope.d3Object.startUpdates();
      } else if ($scope.currentView === 'salespeople') {
        console.log('Salespeople page has been loaded into the view.');
        if ($scope.d3Object !== null) $scope.d3Object.stopUpdates();
@@ -40,8 +42,6 @@ module.exports = exports = function(app) {
        $scope.d3Object.create();
        $scope.d3Object.startUpdates();
      }
-
-     // <li data-ui-sref="salespeople"><a href="#/salespeople">Salespeople</a></li>
 
    });
   }]);
