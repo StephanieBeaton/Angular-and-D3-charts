@@ -59,7 +59,6 @@ module.exports = exports = function(app) {
         .attr('text-anchor', 'middle')
         .text(function(d, i) { return data[i].label; });
     };
-
     // basic bar chart
     D3.prototype.createBarChart = function() {
       var barWidth = 50,
@@ -121,8 +120,6 @@ module.exports = exports = function(app) {
         });
       */
     }
-
-
     // Chart/Graph Update Functions
     D3.prototype.startUpdates = function() {
       var d3Object = this;
