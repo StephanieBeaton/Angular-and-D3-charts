@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = exports = function(app) {
-  app.factory('D3', [function() {
+  app.factory('D3', ['$rootScope', function($rootScope) {
     var d3 = require('d3');
     //var d3_tip = require('d3-tip');
 
@@ -134,7 +134,13 @@ module.exports = exports = function(app) {
 
     D3.prototype.buildChart = function() {
       var self = this;
-      (this.resource) === null ? this.dummyData : this.resource.get(function(err, data) { 
+
+      this.resource === null ? this.dummyData : this.resource.get(function(err, data) {
+        // emit an event up the scope chain with the newly fetched data
+        $rootScope.$emit('dataUpdated', data);
+
+        console.log("!!", data[0]);
+
         self.create(data);
         self.startUpdates();
       });

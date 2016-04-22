@@ -1,6 +1,6 @@
 'use strict';
 module.exports = exports = function(app) {
-  app.controller('appController', ['$scope', '$http', 'Resource', 'D3', function($scope, $http, Resource, D3) {
+  app.controller('appController', ['$rootScope', '$scope', '$http', 'Resource', 'D3', function($rootScope, $scope, $http, Resource, D3) {
     // Create the resource to get the data for the view/page.
 
     //  Resource comes from  js/client.js    require('./services')(app);
@@ -9,6 +9,13 @@ module.exports = exports = function(app) {
     var overviewResource = null;
     var salespeopleResource = Resource('./data/ordersBySalesperson.json');
     var testResource = Resource('./data/ordersByCustomer.json');
+
+    // D3 service instances will emit a 'dataUpdated' event when they fetch new data.
+    // We'll store that data in scope here, and that way it will be available to 
+    // directives and templates as well.
+    $rootScope.$on('dataUpdated', function(evt, data) {
+      $scope.currentData = data;
+    });
 
     //var overviewResource = null;
 
