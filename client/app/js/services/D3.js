@@ -139,8 +139,6 @@ module.exports = exports = function(app) {
         // emit an event up the scope chain with the newly fetched data
         $rootScope.$emit('dataUpdated', data);
 
-        console.log("!!", data[0]);
-
         self.create(data);
         self.startUpdates();
       });
