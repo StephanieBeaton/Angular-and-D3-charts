@@ -3,7 +3,7 @@
 module.exports = exports = function(app) {
   app.factory('D3', [function() {
     var d3 = require('d3');
-    var d3_tip = require('d3-tip');
+    //var d3_tip = require('d3-tip');
 
     /*
     var salesData =
@@ -113,8 +113,7 @@ module.exports = exports = function(app) {
 
       this.data = this.resource === null ? this.dummyData : this.resource.get(function(data) { return data; });
 
-      console.log("this.data");
-      console.log(this.data);
+      this.buildChart();
     };
 
     // ===========================================================
@@ -123,36 +122,40 @@ module.exports = exports = function(app) {
     //   if chart exists, remove all its child elements
     //   ...  then call createPieChart()
     // ===========================================================
-    D3.prototype.create = function() {
+    D3.prototype.create = function(data) {
       // Remove child elements if they're there.
-      if (this.data !== null) {
-        var graph = document.getElementById('graph');
-        if (graph.hasChildNodes()) while (graph.firstChild) graph.removeChild(graph.firstChild);
-        // Decide which create function to run, depends on the D3 object's type.
-        if (this.type === 'pie') this.createPieChart();
-        if (this.type === 'stacked-chart') this.createStackedChart();
-        if (this.type === 'bar') this.createBarChart();
-
-      }
+      var graph = document.getElementById('graph');
+      if (graph.hasChildNodes()) while (graph.firstChild) graph.removeChild(graph.firstChild);
+      // Decide which create function to run, depends on the D3 object's type.
+      if (this.type === 'pie') this.createPieChart(data);
+      if (this.type === 'stacked-chart') this.createStackedChart();
+      if (this.type === 'bar') this.createBarChart(data);
     };
 
-    // ===========================================================
-    //   createPieChart  -  sort of private function
-    //
-    // called from D3.prototype.create in this file
-    //
-    //    the namespace "svg" is used before the tag "svg".
-    // ===========================================================
-    D3.prototype.createPieChart = function() {
+    D3.prototype.buildChart = function() {
+      var self = this;
+      (this.resource) === null ? this.dummyData : this.resource.get(function(err, data) { 
+        self.create(data);
+        self.startUpdates();
+      });
+    };
+    // Chart/Graph Creation Functions
+    D3.prototype.createPieChart = function(data) {
       this.chart = d3.select('#graph')
         .append('svg:svg')
-        .data([this.data])
+        .data([data])
         .attr('width', this.width)
         .attr('height', this.height)
         .append('svg:g')
         .attr('transform', 'translate(' + this.radius + ',' + this.radius + ')');
       this.pie = d3.layout.pie()
-        .value(function(d) { return d.value; });
+        .value(function(d) { 
+          var total = 0;
+          for (var k in d.Totals) {
+            total += d.Totals[k];
+          }
+          return total;
+        });
       this.arc = d3.svg.arc()
         .outerRadius(this.radius);
       this.arcs = this.chart.selectAll('g.slice')
@@ -172,12 +175,12 @@ module.exports = exports = function(app) {
           return 'translate(' + arc.centroid(d) + ')';
         })
         .attr('text-anchor', 'middle')
-        .text(function(d, i) { return data[i].label; });
+        .text(function(d, i) { return d.Name; });
     };
 
     // basic bar chart
-    D3.prototype.createBarChart = function() {
-      var barWidth = 50,
+    D3.prototype.createBarChart = function(data) {
+      var barWidth = 15,
           barPadding = 5,
           leftGutter = 75,
           color = this.color,
@@ -185,7 +188,7 @@ module.exports = exports = function(app) {
           // that might be used by multiple chart types
           yScale = d3.scale.linear()
             // arbitrary domain
-            .domain([0, 500])
+            .domain([0, 30000])
             .range([this.height, 0]),
           yAxis = d3.svg.axis()
             .scale(yScale)
@@ -205,7 +208,7 @@ module.exports = exports = function(app) {
         .call(yAxis);
 
       this.svg.selectAll("g.bar")
-        .data(this.data)
+        .data(data)
         .enter()
         .append("g")
         .attr("class", "bar")
@@ -213,29 +216,44 @@ module.exports = exports = function(app) {
 
       this.svg.selectAll("g.bar").select("rect")
         .attr("width", barWidth)
-        .attr("height", function(d) { return d.value; })
+        .attr("height", function(d) { 
+          var total = 0;
+          for (var k in d.Totals) {
+            total += d.Totals[k];
+          }
+          return total;
+        })
         .transition()
         .duration(500)
         .style("fill", function(d, i) { return color(i); })
         .attr("x", function(d, i) { return (i * barWidth) + (i * barPadding) + leftGutter; })
-        .attr("y", function(d) { return yScale(d.value); });
+        .attr("y", function(d) { 
+          var total = 0;
+          for (var k in d.Totals) {
+            total += d.Totals[k];
+          }
+          return yScale(total); 
+        });
 
       // only create text nodes on the first draw of the chart
       if (this.svg.selectAll("g.bar").select("text").empty()) {
         this.svg.selectAll("g.bar")
           .append("text")
-          .text(function(d) { return d.label; });
+          .text(function(d) { return d.Name });
       }
 
-      /*
       this.svg.selectAll("g.bar").select("text")
         .transition()
         .duration(500)
         .attr("transform", function(d, i) {
-          return "translate(" + ((i * barWidth + 30) + (i * barPadding) + leftGutter) + "," + (yScale(d.value) - 10) + ") rotate(270)";
+          var total = 0;
+          for (var k in d.Totals) {
+            total += d.Totals[k];
+          }
+          return "translate(" + ((i * barWidth + 12) + (i * barPadding) + leftGutter) + "," + (yScale(total) - 10) + ") rotate(270)";
         });
-      */
-    };
+    }
+
     // Chart/Graph Update Functions
 
     // ===========================================================

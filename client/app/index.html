@@ -56,28 +56,35 @@
 
 			<div class="container">
 				<!-- side panel -->
-				<div id="dashboard-side-panel" class="col-lg-3">
+				<div class="row">
+					<div id="dashboard-side-panel" class="col-lg-3">
 
-					<!-- dropdown menu filters -->
-					<!-- TODO: build these dynamically from data using ng-option -->
-					<p>Select an option:</p>
-					<select>
-						<option>An option</option>
-						<option>Another option</option>
-					</select>
-					<p>Select another option:</p>
-					<select>
-						<option>An option</option>
-						<option>Another option</option>
-					</select>
-					<p>Select another option:</p>
-					<select>
-						<option>An option</option>
-						<option>Another option</option>
-					</select>
+						<!-- dropdown menu filters -->
+						<!-- TODO: build these dynamically from data using ng-option -->
+						<p>Select an option:</p>
+						<select>
+							<option>An option</option>
+							<option>Another option</option>
+						</select>
+						<p>Select another option:</p>
+						<select>
+							<option>An option</option>
+							<option>Another option</option>
+						</select>
+						<p>Select another option:</p>
+						<select>
+							<option>An option</option>
+							<option>Another option</option>
+						</select>
+					</div>
+
+					<section data-ui-view class="col-lg-9"></section>
 				</div>
-
-				<section data-ui-view class="col-lg-9"></section>
+				<!--
+				<div class="row">
+					<div class="col-lg-12" style="height: 50px; background-color:red"></div>
+				</div>
+			-->
 
 			</div>
 	  </main>
