@@ -1,6 +1,6 @@
 'use strict';
 module.exports = exports = function(app) {
-  app.directive('customersTable', [function() {
+  app.directive('quotesTable', [function() {
     function link($scope, el, attr) {
       
     
@@ -9,7 +9,7 @@ module.exports = exports = function(app) {
     return {
       link: link,
       restrict: "E",
-      templateUrl : 'templates/customersTable.html',
+      templateUrl : 'templates/quotesTable.html',
     }
 
   }]);
