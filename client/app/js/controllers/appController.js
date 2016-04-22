@@ -8,6 +8,10 @@ module.exports = exports = function(app) {
     // var salespeopleResource = Resource('http://www.fasterbids.com/DataAccess/getordersbysalesperson?USERkey=EP65g4K-8Fg67');
     var overviewResource = null;
     var salespeopleResource = null;
+    var testResource = Resource('./data/ordersByCustomer.json');
+
+    //var overviewResource = null;
+
     // Create the graph(s) for the view/page.
     $scope.d3Object = null;
     $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams, options) {
@@ -26,15 +30,11 @@ module.exports = exports = function(app) {
      if ($scope.currentView === 'overview') {
        console.log('Overview page has been loaded into the view.');
        if ($scope.d3Object !== null) $scope.d3Object.stopUpdates();
-       $scope.d3Object = D3('pie', 500, 500, overviewResource, 1000);
-       $scope.d3Object.create();
-       $scope.d3Object.startUpdates();
+       $scope.d3Object = D3('pie', 500, 500, testResource, 6000000);
      } else if ($scope.currentView === 'customer') {
        console.log('Customer page has been loaded into the view.');
        if ($scope.d3Object !== null) $scope.d3Object.stopUpdates();
-       $scope.d3Object = D3('bar', 500, 500, overviewResource, 1000);
-       $scope.d3Object.create();
-       $scope.d3Object.startUpdates();
+       $scope.d3Object = D3('bar', 800, 500, testResource, 6000000);       
      } else if ($scope.currentView === 'salespeople') {
        console.log('Salespeople page has been loaded into the view.');
        if ($scope.d3Object !== null) $scope.d3Object.stopUpdates();
