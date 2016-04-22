@@ -128,7 +128,7 @@ module.exports = exports = function(app) {
       if (graph.hasChildNodes()) while (graph.firstChild) graph.removeChild(graph.firstChild);
       // Decide which create function to run, depends on the D3 object's type.
       if (this.type === 'pie') this.createPieChart(data);
-      if (this.type === 'stacked-chart') this.createStackedChart();
+      if (this.type === 'stacked-chart') this.createStackedChart(data);
       if (this.type === 'bar') this.createBarChart(data);
     };
 
@@ -287,9 +287,9 @@ module.exports = exports = function(app) {
     // called from D3.prototype.create in this file
     //
     // ===========================================================
-    D3.prototype.createStackedChart = function() {
+    D3.prototype.createStackedChart = function(data) {
 
-            var data=this.data;
+            //var data=this.data;
 
             // ============================================================
             // loop thru data array
@@ -410,7 +410,7 @@ module.exports = exports = function(app) {
               var svg = d3.select('svg')
                   .attr("width", width + margin.left + margin.right)
                   .attr("height", height + margin.top + margin.bottom)
-                .append("g")
+                  .append("g")
                   .attr("class", "child")
                   .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 

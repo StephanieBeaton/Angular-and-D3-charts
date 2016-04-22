@@ -7,7 +7,7 @@ module.exports = exports = function(app) {
     // var overviewResource = Resource('/api/someroute/to/data');
     // var salespeopleResource = Resource('http://www.fasterbids.com/DataAccess/getordersbysalesperson?USERkey=EP65g4K-8Fg67');
     var overviewResource = null;
-    var salespeopleResource = null;
+    var salespeopleResource = Resource('./data/ordersBySalesperson.json');
     var testResource = Resource('./data/ordersByCustomer.json');
 
     //var overviewResource = null;
@@ -38,9 +38,7 @@ module.exports = exports = function(app) {
      } else if ($scope.currentView === 'salespeople') {
        console.log('Salespeople page has been loaded into the view.');
        if ($scope.d3Object !== null) $scope.d3Object.stopUpdates();
-       $scope.d3Object = D3('stacked-chart', 960, 500, salespeopleResource, 1000);
-       $scope.d3Object.create();
-       $scope.d3Object.startUpdates();
+       $scope.d3Object = D3('stacked-chart', 900, 500, salespeopleResource, 6000000);
      }
 
    });
