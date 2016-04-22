@@ -28,7 +28,7 @@ module.exports = exports = function(app) {
    });
    $scope.$on('$viewContentLoaded', function(){
      if ($scope.currentView === 'overview') {
-       console.log('Overview page has been loaded into the view.');
+       console.log('overview page has been loaded into the view.');
        if ($scope.d3Object !== null) $scope.d3Object.stopUpdates();
        $scope.d3Object = D3('pie', 500, 500, testResource, 6000000);
      } else if ($scope.currentView === 'customer') {

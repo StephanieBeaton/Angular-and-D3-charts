@@ -3,7 +3,7 @@
 module.exports = exports = function(app) {
   app.factory('D3', [function() {
     var d3 = require('d3');
-    var d3_tip = require('d3-tip');
+    //var d3_tip = require('d3-tip');
 
     /*
     var salesData =
@@ -113,8 +113,7 @@ module.exports = exports = function(app) {
 
       this.data = this.resource === null ? this.dummyData : this.resource.get(function(data) { return data; });
 
-      console.log("this.data");
-      console.log(this.data);
+      this.buildChart();
     };
 
     // ===========================================================
@@ -123,14 +122,14 @@ module.exports = exports = function(app) {
     //   if chart exists, remove all its child elements
     //   ...  then call createPieChart()
     // ===========================================================
-    D3.prototype.create = function() {
+    D3.prototype.create = function(data) {
       // Remove child elements if they're there.
       var graph = document.getElementById('graph');
       if (graph.hasChildNodes()) while (graph.firstChild) graph.removeChild(graph.firstChild);
       // Decide which create function to run, depends on the D3 object's type.
-      if (this.type === 'pie') this.createPieChart();
+      if (this.type === 'pie') this.createPieChart(data);
       if (this.type === 'stacked-chart') this.createStackedChart();
-      if (this.type === 'bar') this.createBarChart();
+      if (this.type === 'bar') this.createBarChart(data);
     };
 
     D3.prototype.buildChart = function() {
