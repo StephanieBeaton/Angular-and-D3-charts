@@ -1,4 +1,24 @@
-<div>IT'S WORKING</div>
-<div ng-repeat="category in uniqueCategories">
-	{{ category }}
-</div>
+<table class="table-bordered quotes-table">
+	<thead>
+	  <tr>
+	    <th>Quote</th>
+	    <th>Age</th>
+	    <th class="border-cell">Status</th>
+	    <th ng-repeat="category in uniqueCategories">{{ category }}</th>
+	  </tr>
+	</thead>
+	<tbody>
+	  <tr ng-repeat="quote in quotesData">
+	  	<td>{{ quote.Name }}</td>
+	  	<!-- for quote age -->
+	  	<td></td>
+	  	<!-- for quote status -->
+	  	<td class="border-cell"></td>
+	  	<td ng-repeat="category in uniqueCategories" style="background-color: {{ quote.Totals[category] ? cellColors[$index] : white }}">
+	  		<!-- if we find an entry for this category in quote.Totals,
+	  		render the number; otherwise, create a blank <td> element-->
+	  		{{ quote.Totals[category] ? "$" + quote.Totals[category] : "" }}
+	  	</td>
+	  </tr>
+	</tbody>
+</table>
