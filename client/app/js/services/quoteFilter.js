@@ -1,5 +1,7 @@
 module.exports = function(app) {
   app.filter('quoteFilter', function() {
+    // Checks input set of quotes and returns just those with something in
+    // the 'Totals' object (no empty Totals)
     return function(input) {
       var inputArray = [];
 
