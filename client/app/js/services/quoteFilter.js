@@ -8,7 +8,7 @@ module.exports = function(app) {
       }
 
       return inputArray.filter(function(v) {
-        return Object.keys(v.Totals).length > 0 ? true : false
+        return Object.keys(v.Totals).length > 0
       })
     }
   })
