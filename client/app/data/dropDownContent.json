@@ -1,0 +1,28 @@
+{
+"DropDowns": {
+    "Salesmen": [
+      {
+        "Name": "Test User",
+        "Value": 7
+      }
+    ],
+  "Customers": [
+      {
+        "Name": "Auto Save",
+        "Value": 8
+      }
+    ],
+  "Products": [
+      {
+        "Name": "Doors",
+        "Value": 1
+      }
+    ],
+  "Distributors": [
+      {
+        "Name": "Atrium",
+        "Value": 5
+      }
+   ]
+  }
+}

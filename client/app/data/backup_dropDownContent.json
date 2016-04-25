@@ -1,0 +1,356 @@
+{
+"DropDowns": {
+  "Salesmen": [
+    {
+      "Name": "mail Test",
+      "Value": 5
+    },
+    {
+      "Name": "Test User",
+      "Value": 7
+    },
+    {
+      "Name": "Jason Lindquist",
+      "Value": 94
+    },
+    {
+      "Name": "Jason Parchomchuk",
+      "Value": 262
+    },
+    {
+      "Name": "Jason Lindquist",
+      "Value": 300
+    },
+    {
+      "Name": "Jonny Tester",
+      "Value": 301
+    },
+    {
+      "Name": "Jason Testerman",
+      "Value": 302
+    }
+  ],
+"Customers": [
+    {
+      "Name": "Auto Save",
+      "Value": 1
+    },
+    {
+      "Name": "John Doe",
+      "Value": 7
+    },
+    {
+      "Name": "Frank",
+      "Value": 9
+    },
+    {
+      "Name": "Auto Save",
+      "Value": 8
+    },
+    {
+      "Name": "Bill and Mary",
+      "Value": 11
+    },
+    {
+      "Name": "Toms constr",
+      "Value": 19
+    },
+    {
+      "Name": "Bills Construction",
+      "Value": 20
+      },
+    {
+      "Name": "jason l lindquist",
+      "Value": 24
+      },
+    {
+      "Name": "Jake L Christensen",
+      "Value": 93
+    },
+    {
+      "Name": "Test123",
+      "Value": 108
+    },
+    {
+      "Name": "Test Customer",
+      "Value": 116
+    },
+    {
+      "Name": "hasdaui123",
+      "Value": 216
+    },
+    {
+      "Name": "sfdgdf",
+      "Value": 231
+    },
+    {
+      "Name": "Test 2",
+      "Value": 244
+    },
+    {
+      "Name": "derp",
+      "Value": 254
+      },
+    {
+      "Name": "aaaa",
+      "Value": 255
+    },
+    {
+      "Name": "bob",
+      "Value": 441
+    },
+    {
+      "Name": "gggg",
+      "Value": 443
+    },
+    {
+      "Name": "ron",
+      "Value": 444
+    },
+    {
+      "Name": "BRUCE",
+      "Value": 445
+    },
+    {
+      "Name": "Frank",
+      "Value": 446
+    },
+    {
+      "Name": "New Test",
+      "Value": 535
+    },
+    {
+      "Name": "Testing",
+      "Value": 538
+    },
+    {
+      "Name": "Test",
+      "Value": 540
+    },
+    {
+      "Name": "Auto Save",
+      "Value": 544
+    },
+    {
+      "Name": "Test",
+      "Value": 548
+    },
+    {
+      "Name": "Bla",
+      "Value": 549
+    },
+    {
+      "Name": "Testing",
+      "Value": 551
+    },
+    {
+      "Name": "Auto Save",
+      "Value": 429
+    },
+    {
+      "Name": "Cota Construction",
+      "Value": 438
+    },
+    {
+      "Name": "jones4",
+      "Value": 440
+    },
+    {
+      "Name": "Mrs jones",
+      "Value": 477
+    },
+    {
+      "Name": "Auto Save",
+      "Value": 424
+    },
+    {
+      "Name": "Auto Save",
+      "Value": 527
+    },
+    {
+      "Name": "Auto Save",
+      "Value": 529
+    },
+    {
+      "Name": "Auto Save",
+      "Value": 530
+    },
+    {
+      "Name": "Auto Save",
+      "Value": 541
+    },
+    {
+      "Name": "Auto Save",
+      "Value": 542
+    },
+    {
+      "Name": "Bill Construction",
+      "Value": 543
+    },
+    {
+      "Name": "Pam Bulider",
+      "Value": 545
+    },
+    {
+      "Name": "new customer",
+      "Value": 546
+    },
+    {
+      "Name": "MIller Home Center and Lumber",
+      "Value": 550
+    },
+    {
+      "Name": "Atrium Medford",
+      "Value": 557
+    },
+    {
+      "Name": "Auto Save",
+      "Value": 536
+    },
+    {
+      "Name": "Auto Save",
+      "Value": 552
+    },
+    {
+      "Name": "Jason Lindquist",
+      "Value": 553
+    },
+    {
+      "Name": "TEst 4",
+      "Value": 554
+    },
+    {
+      "Name": "Bills Glass",
+      "Value": 555
+    }
+  ],
+"Products": [
+    {
+      "Name": "Doors",
+      "Value": 1
+    },
+    {
+      "Name": "Moulding",
+      "Value": 2
+    },
+    {
+      "Name": "Siding",
+      "Value": 3
+    },
+    {
+      "Name": "Decking",
+      "Value": 4
+    },
+    {
+      "Name": "Windows",
+      "Value": 6
+    },
+    {
+      "Name": "Skylights",
+      "Value": 7
+    },
+    {
+      "Name": "Raw Glass",
+      "Value": 8
+    }
+  ],
+  "Distributors": [
+    {
+      "Name": "Atrium",
+      "Value": 5
+    },
+    {
+      "Name": "Plygem",
+      "Value": 9
+    },
+    {
+      "Name": "Cascade",
+      "Value": 8
+    },
+    {
+      "Name": "Wild River",
+      "Value": 13
+      },
+    {
+      "Name": "Alliance Door",
+      "Value": 14
+    },
+    {
+      "Name": "Andersen",
+      "Value": 6
+    },
+    {
+      "Name": "Metrie",
+      "Value": 17
+    },
+    {
+      "Name": "Crystalite",
+      "Value": 19
+    },
+    {
+      "Name": "Codel",
+      "Value": 31
+    },
+    {
+      "Name": "Alexandria",
+      "Value": 44
+    },
+    {
+      "Name": "Boise Cascade",
+      "Value": 59
+    },
+    {
+      "Name": "Gascoigne",
+      "Value": 63
+    },
+    {
+      "Name": "Capital Lumber",
+      "Value": 65
+    },
+    {
+      "Name": "Boise Cascade",
+      "Value": 70
+      },
+    {
+      "Name": "Huttig",
+      "Value": 71
+      },
+    {
+      "Name": "Huttig",
+      "Value": 27
+    },
+      {
+      "Name": "Huttig",
+      "Value": 72
+    },
+    {
+      "Name": "Capital Lumber",
+      "Value": 68
+    },
+    {
+      "Name": "Milgard",
+      "Value": 4
+    },
+    {
+      "Name": "Milgard Aluminum",
+      "Value": 10
+    },
+    {
+      "Name": "Milgard Wood Clad",
+      "Value": 11
+    },
+    {
+      "Name": "Jeld-Wen",
+      "Value": 7
+    },
+    {
+      "Name": "Velux",
+      "Value": 74
+    },
+    {
+      "Name": "Crystalite",
+      "Value": 75
+    }
+  ]
+  }
+}

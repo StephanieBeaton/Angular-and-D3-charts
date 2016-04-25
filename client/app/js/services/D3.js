@@ -5,36 +5,6 @@ module.exports = exports = function(app) {
     var d3 = require('d3');
     //var d3_tip = require('d3-tip');
 
-    /*
-    var salesData =
-     [{
-        Totals: {
-          Interior: 5310.9,
-          Exterior: 47411.01,
-          Window: 26725.215,
-          Moulding: 1741.07,
-          Siding: 476.5,
-          Decking: 11469.92,
-          Skylight: 10215.76
-        },
-        Name: "Test User",
-        Id: 7
-      },
-      {
-        Totals: {
-          Interior: 0,
-          Exterior: 0,
-          Window: 0,
-          Moulding: 0,
-          Siding: 0,
-          Decking: 0,
-          Skylight: 0
-        },
-        Name: "Test User2",
-        Id: 8
-      }];
-    */
-
     var salesData =
     [
       {
@@ -87,7 +57,187 @@ module.exports = exports = function(app) {
       }
     ];
 
+    // ===========================================================
+    //   filterD3Data - filter the data according the the drop down values
+    //
+    // ===========================================================
 
+    function filterD3Data(data, d3Object) {
+
+            var changedData = [];
+
+            console.log("");
+            console.log("inside D3 filterD3Data");
+
+            console.log("data");
+            console.log(data);
+            console.log("");
+
+            console.log("d3Object");
+            console.log(d3Object);
+
+            //  filter the data if dropdown contains a Customer or Salesmen or Distributor
+
+
+            changedData = data.filter(function(element, index, array){
+
+            // Is this Quotes, Salespersons, or Customers data ?
+
+            // If its Quotes then filter by Product Type and/or Quote?
+            // If its Salespersons then filter by Product Type and/or Salesperson
+            // If its Customers then filter by Product Type and/or Customers
+
+            // [
+            //   {
+            //     "Totals": {
+            //       "Interior":2284.81,   <—   DropDowns.Products.Name   filters these
+            //       "Exterior":33699.36,
+            //       "Window":10477.000,
+            //       "Moulding":19.24,
+            //       "Siding":273.61,
+            //       "Decking":4629.42,
+            //       "Skylight":6230.33
+            //     },
+            //     "Name":"Auto Save",    <—   DropDowns.Customer.Name   filters this
+            //     "Id":8
+            //   },
+            //   {  }
+            // ]
+            if (d3Object.dropdownvalues === undefined) return true;
+
+            // example data   {"Name":"All Door","Value":null}
+
+            if (!((d3Object.dropdownvalues.selectedCustomer && d3Object.dropdownvalues.selectedCustomer.Value) ||
+                  (d3Object.dropdownvalues.selectedSalesmen && d3Object.dropdownvalues.selectedSalesmen.Value) ||
+                  (d3Object.dropdownvalues.selectedDistributor && d3Object.dropdownvalues.selectedSalesmen.Value))) {
+
+                    return true;
+            }
+            // search string this.resource.resource for  "customer" or "salesperson" or "quote"
+
+            console.log("got past rejection");
+
+            var customerFilter    = false;
+            var salespersonFilter = false;
+            var quoteFilter       = false;
+
+            if (d3Object.resource.resource.toLowerCase().indexOf("customer") > -1){
+              customerFilter = true;
+
+              console.log("inside customer test");
+
+              if (!d3Object.dropdownvalues.selectedCustomer){
+                return true;
+              }
+
+              if (d3Object.dropdownvalues.selectedCustomer && d3Object.dropdownvalues.selectedCustomer.Value){
+
+                if (d3Object.dropdownvalues.selectedCustomer["Value"] === element["Id"]){
+                  console.log("return true");
+                  return true;
+                }
+
+              }
+            } else if (d3Object.resource.resource.toLowerCase().indexOf("salesperson") > -1){
+
+              console.log("inside salesperson test");
+
+              salespersonFilter = true;
+
+             console.log("d3Object.dropdownvalues.selectedSalesmen");
+             console.log(d3Object.dropdownvalues.selectedSalesmen);
+             console.log("d3Object.dropdownvalues.selectedSalesmen.Value");
+             console.log(d3Object.dropdownvalues.selectedSalesmen.Value);
+             console.log('element["Id"]');
+             console.log(element["Id"]);
+
+
+             if (!d3Object.dropdownvalues.selectedSalesmen){
+                return true;
+              }
+
+              if (d3Object.dropdownvalues.selectedSalesmen && d3Object.dropdownvalues.selectedSalesmen.Value){
+
+                if (d3Object.dropdownvalues.selectedSalesmen["Value"] === element["Id"]){
+                  console.log("return true");
+                  return true;
+                }
+
+              }
+
+            } else if (d3Object.resource.resource.toLowerCase().indexOf("quote") > -1){
+              quoteFilter = true;
+
+              return true;
+            }
+
+            return false;
+
+        });
+
+        console.log("after Customer, Salesmen filter");
+        console.log("changedData");
+        console.log(changedData);
+
+        if (d3Object.dropdownvalues &&
+            d3Object.dropdownvalues.selectedProductType &&
+            d3Object.dropdownvalues.selectedProductType.Value ) {
+            // filter if the Product Type drop down has a value selected
+
+            changedData = changedData.map(function(element, index, array){
+
+              if (d3Object.dropdownvalues === undefined) return element;
+
+              var temp = {};
+              var Name;
+
+              // {"Name":"Exterior","Value":98}
+
+              var key = d3Object.dropdownvalues.selectedProductType.Name;
+              console.log("key = " + key);
+
+              if (element.Totals[key]) {
+                temp[key] = element.Totals[key];
+              }
+
+              element.Totals = temp;
+
+
+              // for (var property in object) {
+              //     console.log("property = " + property);
+
+              //     if (object.hasOwnProperty(property)) {
+              //        console.log("element.Totals[property]");
+              //        console.log(element.Totals[property]);
+
+              //        if (element.Totals[property]){
+              //         console.log("");
+              //         console.log("property = " + property);
+              //         console.log("element.Totals[property]");
+              //         console.log(element.Totals[property]);
+
+              //         temp[property] = element.Totals[property];
+              //         element.Totals = temp;
+              //       } else {
+              //         element.Totals = {};
+              //       }
+              //     }
+              // }
+
+              return element;
+
+            });  //  changedData = changedData.map(function(element, index, array){
+          }
+
+        console.log("data.length = " + data.length);
+        console.log("changedData.length = " + changedData.length);
+        console.log("");
+
+        console.log("changedData");
+        console.log(changedData);
+        return changedData;
+
+    }
 
     // ===========================================================
     //   D3 constructor function
@@ -96,13 +246,15 @@ module.exports = exports = function(app) {
     //    $scope.d3Object = D3('pie', 500, 500, overviewResource, 1000);
     //    $scope.d3Object = D3('stacked-chart', 960, 500, salespeopleResource, 1000);
     // ===========================================================
-    var D3 = function(type, width, height, resource, updateInterval) {
+    var D3 = function(type, width, height, resource, updateInterval, dropdownvalues) {
       this.type = type;
       this.width = width;
       this.height = height;
       this.resource = resource;
       // The updateInterval is the rate at which the graph will check for new data and refresh itself.  This value is in milliseconds (ex: 1000 = 1 update/second).
       this.updateInterval = updateInterval;
+      // the values selected in the dropdowns
+      this.dropdownvalues = dropdownvalues;
       // The specified with determines a pie chart's radius.
       if (this.type === 'pie') this.radius = this.width / 2;
       // Color range to use for now.
@@ -111,8 +263,12 @@ module.exports = exports = function(app) {
       if (this.type === 'pie') this.dummyData = [{ 'label':'Stuff', 'value':40 }, { 'label':'Other Stuff', 'value':50 }, { 'label':'Things', 'value':30 }];
       if (this.type === 'stacked-chart') this.dummyData = salesData;
 
+      // in D3.js  this.resource is a json array of structures
+      // in Resource this.resourcce  is an API URL to the server
       this.data = this.resource === null ? this.dummyData : this.resource.get(function(data) { return data; });
 
+      console.log("this.data");
+      console.log(this.data);
       this.buildChart();
     };
 
@@ -121,6 +277,8 @@ module.exports = exports = function(app) {
     //
     //   if chart exists, remove all its child elements
     //   ...  then call createPieChart()
+    //
+    //   called in D3.prototype.startUpdates()
     // ===========================================================
     D3.prototype.create = function(data) {
       // Remove child elements if they're there.
@@ -134,7 +292,13 @@ module.exports = exports = function(app) {
 
     D3.prototype.buildChart = function() {
       var self = this;
-      (this.resource) === null ? this.dummyData : this.resource.get(function(err, data) { 
+      (this.resource) === null ? this.dummyData : this.resource.get(function(err, data) {
+        // ==========================================
+        //  filter data with dropdownvalues
+        // ==========================================
+
+        data = filterD3Data(data, self);
+
         self.create(data);
         self.startUpdates();
       });
@@ -149,7 +313,7 @@ module.exports = exports = function(app) {
         .append('svg:g')
         .attr('transform', 'translate(' + this.radius + ',' + this.radius + ')');
       this.pie = d3.layout.pie()
-        .value(function(d) { 
+        .value(function(d) {
           var total = 0;
           for (var k in d.Totals) {
             total += d.Totals[k];
@@ -216,7 +380,7 @@ module.exports = exports = function(app) {
 
       this.svg.selectAll("g.bar").select("rect")
         .attr("width", barWidth)
-        .attr("height", function(d) { 
+        .attr("height", function(d) {
           var total = 0;
           for (var k in d.Totals) {
             total += d.Totals[k];
@@ -227,19 +391,19 @@ module.exports = exports = function(app) {
         .duration(500)
         .style("fill", function(d, i) { return color(i); })
         .attr("x", function(d, i) { return (i * barWidth) + (i * barPadding) + leftGutter; })
-        .attr("y", function(d) { 
+        .attr("y", function(d) {
           var total = 0;
           for (var k in d.Totals) {
             total += d.Totals[k];
           }
-          return yScale(total); 
+          return yScale(total);
         });
 
       // only create text nodes on the first draw of the chart
       if (this.svg.selectAll("g.bar").select("text").empty()) {
         this.svg.selectAll("g.bar")
           .append("text")
-          .text(function(d) { return d.Name });
+          .text(function(d) { return d.Name; });
       }
 
       this.svg.selectAll("g.bar").select("text")
@@ -252,7 +416,7 @@ module.exports = exports = function(app) {
           }
           return "translate(" + ((i * barWidth + 12) + (i * barPadding) + leftGutter) + "," + (yScale(total) - 10) + ") rotate(270)";
         });
-    }
+    };
 
     // Chart/Graph Update Functions
 
@@ -261,13 +425,28 @@ module.exports = exports = function(app) {
     //
     // called from js/controllers/appController.js
     //
+    // called from D3.js   buildChart()
+    //
     // ===========================================================
     D3.prototype.startUpdates = function() {
       var d3Object = this;
       this.updates = setInterval(function() {
         console.log('Updating the D3 object.');
-        d3Object.data = d3Object.resource !== null ? d3Object.resource.get(function(data) { return data; }) : d3Object.data;
-        d3Object.create();
+        var d3Object = this;
+        (d3Object.resource) === null ? d3Object.dummyData : d3Object.resource.get(function(err, data) {
+          // ==========================================
+          //  filter data with dropdownvalues
+          // ==========================================
+          console.log("inside D3.prototype.startUpdates");
+          console.log("inside async function of this.resource.get");
+
+          data = filterD3Data(data, d3Object);
+
+          d3Object.create(data);
+        });
+
+        // d3Object.data = d3Object.resource !== null ? d3Object.resource.get(function(data) { return data; }) : d3Object.data;
+        // d3Object.create();
       }, this.updateInterval);
     };
 
@@ -626,10 +805,21 @@ module.exports = exports = function(app) {
     };     //  D3.prototype.createStackedChart = function() {
 
     // ===========================================================
+    //   watchSelectedProductType() --
+    //      function called when $scope.selectedProductType changes
+    //
+    // used in $watch in appController.js
+    //
+    // ===========================================================
+    // D3.prototype.watchSelectedProductType = function() {
+    //   alert("inside D3 watchSelectedProductType( )");
+    // };
+
+    // ===========================================================
     //  return
     // ===========================================================
-    return function(type, width, height, resource, updateInterval) {
-      return new D3(type, width, height, resource, updateInterval);
+    return function(type, width, height, resource, updateInterval, selected) {
+      return new D3(type, width, height, resource, updateInterval, selected);
     };
   }]);
 };
