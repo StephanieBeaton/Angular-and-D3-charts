@@ -103,14 +103,54 @@ module.exports = exports = function(app) {
             //   },
             //   {  }
             // ]
-            if (d3Object.dropdownvalues === undefined) return true;
+            console.log("d3Object.dropdownvalues");
+            console.log(d3Object.dropdownvalues);
+            console.log("");
+            if (d3Object.dropdownvalues === undefined){
+              console.log("returning true because d3Object.dropdownvalues is null");
+              return true;
+            }
+
 
             // example data   {"Name":"All Door","Value":null}
+            console.log("d3Object.dropdownvalues.selectedCustomer");
+            console.log(d3Object.dropdownvalues.selectedCustomer);
+
+            console.log("d3Object.dropdownvalues.selectedCustomer.Value");
+            if (d3Object.dropdownvalues.selectedCustomer && d3Object.dropdownvalues.selectedCustomer.Value) {
+              console.log(d3Object.dropdownvalues.selectedCustomer.Value);
+            } else {
+              console.log("undefined or null");
+            }
+            console.log();
+
+            console.log("d3Object.dropdownvalues.selectedSalesmen");
+            console.log(d3Object.dropdownvalues.selectedSalesmen);
+
+            console.log("d3Object.dropdownvalues.selectedSalesmen.Value");
+            if (d3Object.dropdownvalues.selectedSalesmen && d3Object.dropdownvalues.selectedSalesmen.Value){
+              console.log(d3Object.dropdownvalues.selectedSalesmen.Value);
+            } else {
+              console.log("undefined or null");
+            }
+            console.log();
+
+            console.log("d3Object.dropdownvalues.selectedDistributor");
+            console.log(d3Object.dropdownvalues.selectedDistributor);
+
+            console.log("d3Object.dropdownvalues.selectedSalesmen.Value");
+            if (d3Object.dropdownvalues.selectedDistributor && d3Object.dropdownvalues.selectedDistributor.Value){
+              console.log(d3Object.dropdownvalues.selectedDistributor.Value);
+            } else {
+              console.log("undefined or null");
+            }
+            console.log();
+
 
             if (!((d3Object.dropdownvalues.selectedCustomer && d3Object.dropdownvalues.selectedCustomer.Value) ||
                   (d3Object.dropdownvalues.selectedSalesmen && d3Object.dropdownvalues.selectedSalesmen.Value) ||
-                  (d3Object.dropdownvalues.selectedDistributor && d3Object.dropdownvalues.selectedSalesmen.Value))) {
-
+                  (d3Object.dropdownvalues.selectedDistributor && d3Object.dropdownvalues.selectedDistributor.Value))) {
+                    console.log("returning because all dropdown values are null or undefined.");
                     return true;
             }
             // search string this.resource.resource for  "customer" or "salesperson" or "quote"
@@ -130,6 +170,11 @@ module.exports = exports = function(app) {
                 return true;
               }
 
+             if (d3Object.dropdownvalues.selectedCustomer["Name"] === "All Customers"){
+               return true;
+             }
+
+
               if (d3Object.dropdownvalues.selectedCustomer && d3Object.dropdownvalues.selectedCustomer.Value){
 
                 if (d3Object.dropdownvalues.selectedCustomer["Value"] === element["Id"]){
@@ -147,7 +192,9 @@ module.exports = exports = function(app) {
              console.log("d3Object.dropdownvalues.selectedSalesmen");
              console.log(d3Object.dropdownvalues.selectedSalesmen);
              console.log("d3Object.dropdownvalues.selectedSalesmen.Value");
-             console.log(d3Object.dropdownvalues.selectedSalesmen.Value);
+             if (d3Object.dropdownvalues.selectedSalesmen && d3Object.dropdownvalues.selectedSalesmen.Value){
+               console.log(d3Object.dropdownvalues.selectedSalesmen.Value);
+             }
              console.log('element["Id"]');
              console.log(element["Id"]);
 
@@ -155,6 +202,10 @@ module.exports = exports = function(app) {
              if (!d3Object.dropdownvalues.selectedSalesmen){
                 return true;
               }
+
+             if (d3Object.dropdownvalues.selectedSalesmen["Name"] === "All Salesmen"){
+               return true;
+             }
 
               if (d3Object.dropdownvalues.selectedSalesmen && d3Object.dropdownvalues.selectedSalesmen.Value){
 
@@ -179,9 +230,13 @@ module.exports = exports = function(app) {
         console.log("changedData");
         console.log(changedData);
 
-        if (d3Object.dropdownvalues &&
-            d3Object.dropdownvalues.selectedProductType &&
-            d3Object.dropdownvalues.selectedProductType.Value ) {
+       // (d3Object.dropdownvalues &&
+       //   d3Object.dropdownvalues.selectedProductType === "All Products")) {
+
+        if ( d3Object.dropdownvalues &&
+             d3Object.dropdownvalues.selectedProductType &&
+             d3Object.dropdownvalues.selectedProductType.Value )
+        {
             // filter if the Product Type drop down has a value selected
 
             changedData = changedData.map(function(element, index, array){
@@ -227,7 +282,7 @@ module.exports = exports = function(app) {
               return element;
 
             });  //  changedData = changedData.map(function(element, index, array){
-          }
+        }
 
         console.log("data.length = " + data.length);
         console.log("changedData.length = " + changedData.length);
@@ -283,15 +338,24 @@ module.exports = exports = function(app) {
     D3.prototype.create = function(data) {
       // Remove child elements if they're there.
       var graph = document.getElementById('graph');
-      if (graph.hasChildNodes()) while (graph.firstChild) graph.removeChild(graph.firstChild);
+      // &&&  experiment
+      // if (graph.hasChildNodes()) while (graph.firstChild) graph.removeChild(graph.firstChild);
       // Decide which create function to run, depends on the D3 object's type.
       if (this.type === 'pie') this.createPieChart(data);
       if (this.type === 'stacked-chart') this.createStackedChart(data);
       if (this.type === 'bar') this.createBarChart(data);
     };
 
-    D3.prototype.buildChart = function() {
+    D3.prototype.buildChart = function(dropdownvalues) {
       var self = this;
+      if (dropdownvalues){
+          console.log("change self.dropdownvalues");
+          self.dropdownvalues = dropdownvalues;   // &&&
+      }
+
+      console.log("self.dropdownvalues");
+      console.log(self.dropdownvalues);
+
       (this.resource) === null ? this.dummyData : this.resource.get(function(err, data) {
         // ==========================================
         //  filter data with dropdownvalues
@@ -300,6 +364,7 @@ module.exports = exports = function(app) {
         data = filterD3Data(data, self);
 
         self.create(data);
+        self.stopUpdates();
         self.startUpdates();
       });
     };
@@ -577,23 +642,38 @@ module.exports = exports = function(app) {
 
               //  commented out because done in "create()"
               // var svg = d3.selectAll('g.child').remove();
-              d3.select('#graph')
-                .append('svg');
 
-              // var rawSvg=elem.find('svg');
+              //  Does <svg> alrready exist?  If so do not add another one.  &&& Fix
+              var svg = d3.select('svg');
+              console.log("svg");
+              console.log(svg);
+              console.log("");
+              console.log("svg.empty()");
+              console.log(svg.empty());
+
+              if (svg.empty()){
+                console.log("create new svg");
+                console.log("");
+                d3.select('#graph')
+                  .append('svg');
 
 
-              // single g group element parent of all other elements in svg
+                // single g group element parent of all other elements in svg
 
-              // var svg = d3.select(rawSvg[0])
-              var svg = d3.select('svg')
-                  .attr("width", width + margin.left + margin.right)
-                  .attr("height", height + margin.top + margin.bottom)
-                  .append("g")
-                  .attr("class", "child")
-                  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                // var svg = d3.select(rawSvg[0])
+                var svg = d3.select('svg')
+                    .attr("width", width + margin.left + margin.right)
+                    .attr("height", height + margin.top + margin.bottom)
+                    .append("g")
+                    .attr("class", "child")
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-              this.chart = svg;
+                this.chart = svg;   // not convinced this is necessary for stacked-chart
+
+              } else {
+                svg = d3.select('.child');
+              }
+
 
                 // set domain of color scale
                 // this returns all the keys in one object in the array of objects "data"
@@ -687,11 +767,17 @@ module.exports = exports = function(app) {
                 y.domain([0, d3.max(data, function(d) { return d.total; })]);
 
                 // add x axis
-                // ... translate x axis down by height pixels
+                var x_axis = svg.select(".x");
+
+                if (!x_axis.empty()) {
+                  x_axis.remove();
+                }
+
                 svg.append("g")
                     .attr("class", "x axis")
                     .attr("transform", "translate(0," + height + ")")
                     .call(xAxis);
+
 
                 // add y axis
                 // ... fancy code to handle y axis labels
@@ -725,11 +811,34 @@ module.exports = exports = function(app) {
                 //
                 //  each of these new g elements is a column
                 //  The data for each g element is the object in the data array
+
+               // var state = svg.selectAll(".salesperson")
+               //      .data(data, function(d) { return d.Name;})
+               //    .enter().append("g")
+               //      .attr("class", "g")
+               //      .attr("transform", function(d) { return "translate(" + x(d.Name) + ",0)"; });
+
+
                 var state = svg.selectAll(".salesperson")
-                    .data(data)
-                  .enter().append("g")
-                    .attr("class", "g")
+                    .data(data, function(d){ return d.Name; });
+
+                // new data
+                //                     .attr("class", "g")   removed
+                state.enter().append("g")
+                    .attr("class", "salesperson")
+                    .attr("x", 0)
+                    .transition().duration(1500)
                     .attr("transform", function(d) { return "translate(" + x(d.Name) + ",0)"; });
+
+                // removed data:
+                state.exit().remove();
+
+                // updated data:
+                state.attr("class", "salesperson")
+                     .attr("x", 0)
+                     .transition().duration(1500)
+                     .attr("transform", function(d) { return "translate(" + x(d.Name) + ",0)"; });
+
 
                // STOPPED WORKING AFTER MERGE WITH JAMES SERVICES CONCEPT
                // tool tip
@@ -738,11 +847,17 @@ module.exports = exports = function(app) {
                //      .on('mouseout', tip.hide);
                // ===========================================================
 
-                //  Latest attempt at fix
-
                 // You are appending the text to rect elements -- this isn't valid in SVG
                 // and the text won't show up.
                 // Instead, append the text either to a g element or the top-level SVG:
+                // var colText = svg.selectAll("text.bar");
+                // if (!colText.empty()){
+                //   colText.remove();
+                // }
+
+                console.log("before remove()");
+                svg.selectAll("text.bar").remove();
+                console.log("after remove()");
 
                 svg.selectAll("text.bar")
                   .data(data)
@@ -750,6 +865,7 @@ module.exports = exports = function(app) {
                   //.attr("transform", "rotate(-90)")
                   //.attr("class", "bar")
                   .attr("text-anchor", "middle")
+                  .attr("class", "bar")
                   .attr("x", function(d) { return x(d.Name) + x.rangeBand()/2; })
                   .attr("y", function(d) { return height - 30; })
                   .style("fill", "black")
@@ -765,14 +881,42 @@ module.exports = exports = function(app) {
                 //
                 //  cummulativeSales array elements are the data here
 
+                /*
                 state.selectAll("rect")
                     .data(function(d) { return d.cummulativeSales; })
                   .enter().append("rect")
+                    .transition().duration(750)
                     .attr("width", x.rangeBand())
                     .attr("y", function(d) { return y(d.y1); })
                     .attr("height", function(d) { return y(d.y0) - y(d.y1); })
                     .style("fill", function(d) { return color(d.name); });
+                */
 
+                var bar = state.selectAll("rect")
+                            .data(function(d) { return d.cummulativeSales; });  // doesn't this need data ?
+
+                // new data
+                bar.enter().append("rect")
+                    .attr("width", x.rangeBand())
+                    .attr("y", function(d) { return y(d.y1); })
+                    .attr("height", function(d) { return 0; })
+                    .transition().duration(1500)
+                    .attr("height", function(d) { return y(d.y0) - y(d.y1); })
+                    .style("fill", function(d) { return color(d.name); });
+
+                // removed data:
+                bar.exit().remove();
+
+                // updated data:
+                 bar.attr("y", function(d) { return y(d.y1); })
+                    .attr("width", x.rangeBand())
+                    .attr("height", function(d) { return 0; })
+                    .transition().duration(1500)
+                    .attr("height", function(d) { return y(d.y0) - y(d.y1); })
+                    .style("fill", function(d) { return color(d.name); });
+
+                   // "x" is set from parent element g ??
+                   // not added from "enter()".
 
 
                 // add fancy legend
@@ -804,16 +948,6 @@ module.exports = exports = function(app) {
 
     };     //  D3.prototype.createStackedChart = function() {
 
-    // ===========================================================
-    //   watchSelectedProductType() --
-    //      function called when $scope.selectedProductType changes
-    //
-    // used in $watch in appController.js
-    //
-    // ===========================================================
-    // D3.prototype.watchSelectedProductType = function() {
-    //   alert("inside D3 watchSelectedProductType( )");
-    // };
 
     // ===========================================================
     //  return

@@ -58,7 +58,14 @@ module.exports = exports = function(app) {
               } else if ($scope.currentView === 'customer'){
                 $scope.d3Object = D3('bar', 800, 500, testResource, 6000000, dropdownvalues);
               } else {
-                $scope.d3Object = D3('stacked-chart', 900, 500, salespeopleResource, 6000000, dropdownvalues);
+                console.log("$scope.currentView ");
+                console.log($scope.currentView);
+                if ($scope.d3Object) {
+                  console.log("calling buildChart() from watchForDropDownChanges because $scope.d3Object already exists.");
+                  $scope.d3Object.buildChart(dropdownvalues);
+                } else {
+                  $scope.d3Object = D3('stacked-chart', 900, 500, salespeopleResource, 6000000, dropdownvalues);
+                }
               }
           }
       }
@@ -68,6 +75,7 @@ module.exports = exports = function(app) {
     //var overviewResource = null;
 
     // Create the graph(s) for the view/page.
+
 
     // =======================================================================
     //
@@ -143,10 +151,12 @@ module.exports = exports = function(app) {
    $scope.$on('$viewContentLoaded', function(){
 
 
-     $scope.selectedProductType = $scope.productTypesDropDown[0];
-     $scope.selectedDistributor = $scope.distributorsDropDown[0];
-     $scope.selectedCustomer = $scope.customersDropDown[0];
-     $scope.selectedSalesmen = $scope.salesmenDropDown[0];
+     // commented out because I think this is triggering the watch code
+     //
+     // $scope.selectedProductType = $scope.productTypesDropDown[0];
+     // $scope.selectedDistributor = $scope.distributorsDropDown[0];
+     // $scope.selectedCustomer = $scope.customersDropDown[0];
+     // $scope.selectedSalesmen = $scope.salesmenDropDown[0];
 
 
      if ($scope.currentView === 'overview') {
