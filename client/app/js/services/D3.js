@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = exports = function(app) {
-  app.factory('D3', [function() {
+  app.factory('D3', ['$rootScope', function($rootScope) {
     var d3 = require('d3');
     //var d3_tip = require('d3-tip');
 
@@ -348,6 +348,7 @@ module.exports = exports = function(app) {
 
     D3.prototype.buildChart = function(dropdownvalues) {
       var self = this;
+
       if (dropdownvalues){
           console.log("change self.dropdownvalues");
           self.dropdownvalues = dropdownvalues;   // &&&
@@ -356,12 +357,16 @@ module.exports = exports = function(app) {
       console.log("self.dropdownvalues");
       console.log(self.dropdownvalues);
 
-      (this.resource) === null ? this.dummyData : this.resource.get(function(err, data) {
+      this.resource === null ? this.dummyData : this.resource.get(function(err, data) {
+        // emit an event up the scope chain with the newly fetched data
+        $rootScope.$emit('dataUpdated', data);
+
         // ==========================================
         //  filter data with dropdownvalues
         // ==========================================
 
         data = filterD3Data(data, self);
+
 
         self.create(data);
         self.stopUpdates();
