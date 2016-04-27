@@ -186,33 +186,16 @@ module.exports = exports = function(app) {
     function startUpdates(resourceObj) {
 
       $scope[resourceObj.name + "Updates"] = setInterval(function() {
-        console.log('Updating ' + resourceObj.name);
 
         if (resourceObj.resource === null){
             $scope[resourceObj.name + "Data"] = resourceObj.dummyData;
 
-            // if (resourceObj.name !== "dropdown"){
-            //   $scope[resourceObj.name + "FilteredData"] = resourceObj.dummyData;
-            // }
         } else {
 
             resourceObj.resource.get(function(err, data) {
 
-                console.log("inside appController.js startUpdates()");
-                console.log("inside async function of resourceObj.resource.get");
-
                 $scope[resourceObj.name + "Data"] = data;
 
-                // ==========================================
-                //  filter data with dropdownvalues
-                // ==========================================
-                // if (resourceObj.name !== "dropdown"){
-                //   $scope[resourceObj.name + "FilteredData"] = filterD3Data(data, resourceObj.name);
-                // }
-
-                // DO NOT DRAW A CHART
-                // $scope.currentView === 'overview' || 'customer' || 'salespeople'
-                // buildChart($scope.salespeopleFilteredData);
             });
 
         }
@@ -239,35 +222,19 @@ module.exports = exports = function(app) {
     // =======================================================================
     function getDataFromServer(){
 
-      console.log("inside getDataFromServer()");
-
       resources.forEach(function(resourceObj){
 
-         console.log("resourceObj");
-         console.log(resourceObj);
-
          if (resourceObj.resource === null){
-            console.log("resourceObj.resource is null");
+
             $scope[resourceObj.name + "Data"] = resourceObj.dummyData;
 
-            console.log(resourceObj.name + "Data");
-            console.log($scope[resourceObj.name + "Data"]);
-
-            // if (resourceObj.name !== "dropdown"){
-            //   $scope[resourceObj.name + "FilteredData"] = resourceObj.dummyData;
-            // }
           } else {
 
              resourceObj.resource.get(function(err, data) {
                 // emit an event up the scope chain with the newly fetched data
                 // $rootScope.$emit('dataUpdated', data);
 
-                console.log("inside resourceObj.resource.get()");
-
                 $scope[resourceObj.name + "Data"] = data;
-
-                console.log(resourceObj.name + "Data");
-                console.log($scope[resourceObj.name + "Data"]);
 
                 if (resourceObj.name === "dropdown"){
 
@@ -297,22 +264,6 @@ module.exports = exports = function(app) {
 
                 }  //  if (resourceObj.name === "dropdown"){
 
-                // ==========================================
-                //  filter data with dropdownvalues
-                // ==========================================
-
-                // if (resourceObj.name !== "dropdown"){
-                //   $scope[resourceObj.name + "FilteredData"] = filterD3Data(data, resourceObj.name);
-                // }
-
-                // if chart already exists then redraw chart
-                // if ($scope.d3Object !== null) { }
-                // $scope.currentView === 'overview' || 'customer' || 'salespeople'
-                // buildChart($scope.salespeopleFilteredData);
-
-                // temporarily commented out for debugging
-                // stopUpdates(resourceObj);
-                // startUpdates(resourceObj);
               });
 
           }
@@ -330,7 +281,6 @@ module.exports = exports = function(app) {
      function deepCopyObject(itemObj){
         var temp = {};
 
-        // problem -  if itemObj.property is another object !!
         for (var property in itemObj) {
 
             if (itemObj.hasOwnProperty(property)) {
@@ -374,10 +324,6 @@ module.exports = exports = function(app) {
 
           $scope.dropdownvalues = dropdownvalues;
 
-          console.log("inside watch function");
-          console.log("selected");
-          console.log(dropdownvalues);
-
           if (!(dropdownvalues.selectedSalesmen    === undefined &&
                 dropdownvalues.selectedCustomer    === undefined &&
                 dropdownvalues.selectedProductType === undefined &&
@@ -405,7 +351,6 @@ module.exports = exports = function(app) {
                 temp = filterD3Data(tempData, "customer");
 
                 if ($scope.d3Object) {
-                  console.log("calling buildChart() from watchForDropDownChanges because $scope.d3Object already exists.");
                   $scope.d3Object.buildChart(temp);
                 } else {
                   $scope.d3Object = D3('pie', 500, 500, temp);
@@ -442,7 +387,6 @@ module.exports = exports = function(app) {
                 temp = filterD3Data(tempData, "customer");
 
                 if ($scope.d3Object) {
-                  console.log("calling buildChart() from watchForDropDownChanges because $scope.d3Object already exists.");
                   $scope.d3Object.buildChart(temp);
                 } else {
                   $scope.d3Object = D3('bar', 800, 500, temp);
@@ -458,12 +402,6 @@ module.exports = exports = function(app) {
                  // });
 
               } else {
-                console.log("$scope.currentView ");
-                console.log($scope.currentView);
-
-                console.log("before filterD3Data() call");
-                console.log("$scope.salespeopleData");
-                console.log($scope.salespeopleData);
 
 
                  // stop updates
@@ -485,12 +423,7 @@ module.exports = exports = function(app) {
 
                 temp = filterD3Data(tempData, "salespeople");
 
-                console.log("after filterD3Data() call");
-                console.log("$scope.salespeopleData");
-                console.log($scope.salespeopleData);
-
                 if ($scope.d3Object) {
-                  console.log("calling buildChart() from watchForDropDownChanges because $scope.d3Object already exists.");
                   $scope.d3Object.buildChart(temp);
                 } else {
                   $scope.d3Object = D3('stacked-chart', 900, 500, temp);
@@ -529,8 +462,6 @@ module.exports = exports = function(app) {
     };
 
 
-    //  FIX THIS !!
-
     //  THIS EVENT  'dataUpdated' NO LONGER OCCURS
     //  SO  $scope.uniqueCategories  is not set
     //  SO  $scope.currentData  is not set
@@ -552,19 +483,15 @@ module.exports = exports = function(app) {
     $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams, options) {
      if (toState.name === 'overview') {
        $scope.currentView = 'overview';
-       console.log('User navigated to overview page.');
      } else if (toState.name === 'customer') {
        $scope.currentView = 'customer';
-       console.log('User navigated to customer page.');
      } else if (toState.name === 'salespeople') {
        $scope.currentView = 'salespeople';
-       console.log('User navigated to salespeople page.');
      }
    });
    $scope.$on('$viewContentLoaded', function(){
 
      var temp = "";
-
      var tempData;
      var filteredTempData;
 
@@ -580,7 +507,6 @@ module.exports = exports = function(app) {
      // });
 
      if ($scope.currentView === 'overview') {
-       console.log('overview page has been loaded into the view.');
 
        // deep copy $scope.customerData to another array
        // ... because, somehow, function filterD3Data()
@@ -589,10 +515,6 @@ module.exports = exports = function(app) {
        tempData = deepCopyArray($scope.customerData);
 
        filteredTempData = filterD3Data(tempData, "customer");
-
-       console.log('return to overview page has been loaded into the view.');
-       console.log("filteredTempData");
-       console.log(filteredTempData);
 
        $scope.d3Object = D3('pie', 500, 500, filteredTempData);
 
@@ -604,7 +526,6 @@ module.exports = exports = function(app) {
        temp = 'customer';
 
      } else if ($scope.currentView === 'customer') {
-       console.log('Customer page has been loaded into the view.');
 
        // deep copy $scope.customerData to another array
        // ... because, somehow, function filterD3Data()
@@ -624,7 +545,6 @@ module.exports = exports = function(app) {
        temp = 'customer';
 
      } else if ($scope.currentView === 'salespeople') {
-       console.log('Salespeople page has been loaded into the view.');
 
        // deep copy $scope.customerData to another array
        // ... because, somehow, function filterD3Data()
@@ -663,74 +583,20 @@ module.exports = exports = function(app) {
 
     function filterD3Data(data, dataType) {
 
-            var changedData = [];
+        var changedData = [];
 
-            // =====================================================
-            //  copy data array
-            //  ... because having trouble with passing by reference
-            // =====================================================
+        // =====================================================
+        //  copy data array
+        //  ... because having trouble with passing by reference
+        // =====================================================
 
-            var copyOfData = data.map(function(item){
-              return item;
-            });
+        var copyOfData = data.map(function(item){
+          return item;
+        });
 
-            console.log("");
-            console.log("");
-            console.log("");
-
-            console.log("inside D3 filterD3Data");
-
-            console.log("copyOfData");
-            console.log(copyOfData);
-            console.log("");
-
-            console.log("dataType");
-            console.log(dataType);
-
-
-            // console.log("$scope.dropdownvalues");
-            // console.log($scope.dropdownvalues);
-            // console.log("");
-            if ($scope.dropdownvalues === undefined){
-              console.log("returning copyOfData because $scope.dropdownvalues is null");
-              return copyOfData;
-            }
-
-
-            // example data   {"Name":"All Door","Value":null}
-            // console.log("$scope.dropdownvalues.selectedCustomer");
-            // console.log($scope.dropdownvalues.selectedCustomer);
-
-            // console.log("$scope.dropdownvalues.selectedCustomer.Value");
-            // if ($scope.dropdownvalues.selectedCustomer && $scope.dropdownvalues.selectedCustomer.Value) {
-            //   console.log($scope.dropdownvalues.selectedCustomer.Value);
-            // } else {
-            //   console.log("undefined or null");
-            // }
-            // console.log();
-
-            // console.log("$scope.dropdownvalues.selectedSalesmen");
-            // console.log($scope.dropdownvalues.selectedSalesmen);
-
-            // console.log("$scope.dropdownvalues.selectedSalesmen.Value");
-            // if ($scope.dropdownvalues.selectedSalesmen && $scope.dropdownvalues.selectedSalesmen.Value){
-            //   console.log($scope.dropdownvalues.selectedSalesmen.Value);
-            // } else {
-            //   console.log("undefined or null");
-            // }
-            // console.log();
-
-            // console.log("$scope.dropdownvalues.selectedDistributor");
-            // console.log($scope.dropdownvalues.selectedDistributor);
-
-            // console.log("$scope.dropdownvalues.selectedDistributor.Value");
-            // if ($scope.dropdownvalues.selectedDistributor && $scope.dropdownvalues.selectedDistributor.Value){
-            //   console.log($scope.dropdownvalues.selectedDistributor.Value);
-            // } else {
-            //   console.log("undefined or null");
-            // }
-            // console.log();
-
+        if ($scope.dropdownvalues === undefined){
+          return copyOfData;
+        }
 
         // =====================================================================
         //   filter data for the  Customer, Salesmen and Distributor dropdowns
@@ -747,23 +613,13 @@ module.exports = exports = function(app) {
             // =====================================================================
             //   filter data for the  Customer, Salesmen and Distributor dropdowns
             // =====================================================================
-            console.log("filter copyOfData for the  Customer, Salesmen and Distributor dropdowns");
-
             changedData = copyOfData.filter(function(element, index, array){
-
-              console.log("element.Id");
-              console.log(element.Id);
-              console.log("element.Name");
-              console.log(element.Name);
-
-              console.log("dataType");
-              console.log(dataType);
 
                 // Is this Quotes, Salespersons, or Customers data ?
 
-                // If its Quotes then filter by Product Type and/or Quote?
+                // If its Quotes then       filter by Product Type and/or Quote?
                 // If its Salespersons then filter by Product Type and/or Salesperson
-                // If its Customers then filter by Product Type and/or Customers
+                // If its Customers then    filter by Product Type and/or Customers
 
                 // [
                 //   {
@@ -783,84 +639,35 @@ module.exports = exports = function(app) {
                 // ]
 
 
-                // if (!(($scope.dropdownvalues.selectedCustomer && $scope.dropdownvalues.selectedCustomer.Value) ||
-                //       ($scope.dropdownvalues.selectedSalesmen && $scope.dropdownvalues.selectedSalesmen.Value) ||
-                //       ($scope.dropdownvalues.selectedDistributor && $scope.dropdownvalues.selectedDistributor.Value))) {
-                //         console.log("returning because all dropdown values are null or undefined.");
-                //         return true;
-                // }
-
-                // Are we filtering  "customer" data or "salesperson" data or "quote" data?
-
                 if (dataType === "customer"){
-
-                  console.log("inside customer test");
 
                   if (!$scope.dropdownvalues.selectedCustomer){
                     return true;
                   }
 
                   if ($scope.dropdownvalues.selectedCustomer["Name"] === "All Customers"){
-                    console.log("no filtering for Customer.  All Customers option selected in dropdown.");
                     return true;
                   }
 
                   if ($scope.dropdownvalues.selectedCustomer && $scope.dropdownvalues.selectedCustomer.Value){
                     if ($scope.dropdownvalues.selectedCustomer["Value"] === element["Id"]){
-                      console.log("");
-                      console.log("selected dropdown value === Customer Id in data");
-                      console.log("return true");
-                      console.log("element");
-                      console.log(element);
-                      console.log("element.Id");
-                      console.log(element.Id);
-                      console.log("element.Name");
-                      console.log(element.Name);
-                      console.log("");
-
                       return true;
                     }
                   }
 
                 } else if (dataType === "salespeople"){
 
-                   console.log("");
-                   console.log("inside salesperson test");
-
-
-                   console.log("$scope.dropdownvalues.selectedSalesmen");
-                   console.log($scope.dropdownvalues.selectedSalesmen);
-                   console.log("$scope.dropdownvalues.selectedSalesmen.Value");
-                   if ($scope.dropdownvalues.selectedSalesmen && $scope.dropdownvalues.selectedSalesmen.Value){
-                     console.log($scope.dropdownvalues.selectedSalesmen.Value);
-                   }
-                   console.log('element["Id"]');
-                   console.log(element["Id"]);
-
-
                    if (!$scope.dropdownvalues.selectedSalesmen){
                       return true;
                     }
 
                    if ($scope.dropdownvalues.selectedSalesmen["Name"] === "All Salesmen"){
-                     console.log("no filtering for Salemen.  All Salesmen option selected in dropdown.");
                      return true;
                    }
 
                   if ($scope.dropdownvalues.selectedSalesmen && $scope.dropdownvalues.selectedSalesmen.Value){
 
                     if ($scope.dropdownvalues.selectedSalesmen["Value"] === element["Id"]){
-                      console.log("");
-                      console.log("selected dropdown value === Salesmen Id in data");
-                      console.log("return true");
-                      console.log("element");
-                      console.log(element);
-                      console.log("element.Id");
-                      console.log(element.Id);
-                      console.log("element.Name");
-                      console.log(element.Name);
-                      console.log("");
-
                       return true;
                     }
 
@@ -889,10 +696,6 @@ module.exports = exports = function(app) {
        // =====================================================================
 
 
-        console.log("after Customer, Salesmen filter");
-        console.log("changedData");
-        console.log(changedData);
-
        // =====================================================================
        //   filter data for the  Product Type dropdowns
        // =====================================================================
@@ -901,9 +704,6 @@ module.exports = exports = function(app) {
              $scope.dropdownvalues.selectedProductType &&
              $scope.dropdownvalues.selectedProductType.Value )
         {
-
-            console.log("filtering by Product Type");
-            console.log("============================================");
 
            // =====================================================================
            //   filter data for the  Product Type dropdowns
@@ -918,7 +718,6 @@ module.exports = exports = function(app) {
               // ... using Product Type Name  not  Id
 
               var Name = $scope.dropdownvalues.selectedProductType.Name;
-              console.log("Name = " + Name);
 
               if (element.Totals[Name]) {
                 temp[Name] = element.Totals[Name];
@@ -937,12 +736,6 @@ module.exports = exports = function(app) {
        //   end of     filter data for the  Product Type dropdowns
        // =====================================================================
 
-        console.log("data.length = " + data.length);
-        console.log("changedData.length = " + changedData.length);
-        console.log("");
-
-        console.log("changedData");
-        console.log(changedData);
         return changedData;
 
     }  //  end of   function filterD3Data(data) {

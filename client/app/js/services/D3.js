@@ -16,13 +16,6 @@ module.exports = exports = function(app) {
     //    $scope.d3Object = D3('stacked-chart', 960, 500, salespeopleResource, 1000);
     // ===========================================================
     var D3 = function(type, width, height, dataFilteredByDropDowns) {
-
-      console.log("");
-      console.log("inside D3 constructor");
-      console.log("dataFilteredByDropDowns");
-      console.log(dataFilteredByDropDowns);
-
-
       this.type = type;
       this.width = width;
       this.height = height;
@@ -32,7 +25,6 @@ module.exports = exports = function(app) {
       // Color range to use for now.
       if (this.type != 'stacked-chart') this.color = d3.scale.category20c();
 
-      console.log("calling D3 buildChart");
       this.buildChart(dataFilteredByDropDowns);
     };
 
@@ -53,10 +45,6 @@ module.exports = exports = function(app) {
 
     D3.prototype.buildChart = function(data) {
 
-      console.log("inside D3 buildChart");
-      console.log("data");
-      console.log(data);
-      console.log("");
       this.create(data);
 
     };
@@ -65,11 +53,6 @@ module.exports = exports = function(app) {
 
       //  Does <svg> already exist?  If so do not add another one.
       var svg = d3.select('svg');
-      console.log("svg");
-      console.log(svg);
-      console.log("");
-      console.log("svg.empty()");
-      console.log(svg.empty());
 
       if (svg.empty()){
 
@@ -230,11 +213,6 @@ module.exports = exports = function(app) {
     // ===========================================================
     D3.prototype.createStackedChart = function(data) {
 
-
-            console.log("inside createStackedChart");
-            console.log("data");
-            console.log(data);
-
             // ============================================================
             // loop thru data array
             // ... and create an object whose properties are all Product types in data
@@ -249,10 +227,6 @@ module.exports = exports = function(app) {
 
             });
 
-             // console.log("productTypeObj");
-             // console.log(productTypeObj);
-
-
              // loop thru the properties of productTypeObj
              // and create an array of strings of the properties of productTypeObj
 
@@ -264,14 +238,11 @@ module.exports = exports = function(app) {
                   }
               }
 
-              // console.log("productTypes");
-              // console.log(productTypes);
 
              // ============================================================
-
-              //  loop thru data array
-              //  If an item/object in the array is missing one of the product types in ProductTypes
-              //  ... then add the property to the item/object
+             //  loop thru data array
+             //  If an item/object in the array is missing one of the product types in ProductTypes
+             //  ... then add the property to the item/object
              // ============================================================
 
              data.forEach(function(d){
@@ -330,15 +301,8 @@ module.exports = exports = function(app) {
 
               //  Does <svg> alrready exist?  If so do not add another one.
               var svg = d3.select('svg');
-              console.log("svg");
-              console.log(svg);
-              console.log("");
-              console.log("svg.empty()");
-              console.log(svg.empty());
 
               if (svg.empty()){
-                console.log("create new svg");
-                console.log("");
                 d3.select('#graph')
                   .append('svg');
 
@@ -406,9 +370,6 @@ module.exports = exports = function(app) {
                 // .. create cummulativeSales array and sort it by productVolume
                 data.forEach(function(d) {
                   d.cummulativeSales = color.domain().map(function(name) { return {name: name, y0: 0,  productVolume: +d.Totals[name], y1: 0}; });
-
-                  // console.log("d.cummulativeSales");
-                  // console.log(d.cummulativeSales);
 
                  // sort items in cummulativeSales array by productVolume descending
                   d.cummulativeSales.sort(function(a, b) { return b.productVolume - a.productVolume;});
