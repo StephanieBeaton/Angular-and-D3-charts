@@ -269,7 +269,33 @@ module.exports = exports = function(app) {
                 console.log(resourceObj.name + "Data");
                 console.log($scope[resourceObj.name + "Data"]);
 
+                if (resourceObj.name === "dropdown"){
 
+                      // remove "s" from the end of all Product Type Names
+                      data.DropDowns.Products = data.DropDowns.Products.map(function(element){
+                        if (element.Name.endsWith('s') ){
+                          element.Name = element.Name.slice(0, -1);
+                        }
+                        return element;
+                      });
+
+                      // append two more Product Types
+                      data.DropDowns.Products.push({
+                        "Name": "Exterior",
+                        "Value": 98
+                      });
+
+                      data.DropDowns.Products.push({
+                        "Name": "Interior",
+                        "Value": 99
+                      });
+
+                      $scope.productTypesDropDown = data.DropDowns.Products;
+                      $scope.distributorsDropDown = data.DropDowns.Distributors;
+                      $scope.customersDropDown    = data.DropDowns.Customers;
+                      $scope.salesmenDropDown     = data.DropDowns.Salesmen;
+
+                }  //  if (resourceObj.name === "dropdown"){
 
                 // ==========================================
                 //  filter data with dropdownvalues
@@ -288,6 +314,7 @@ module.exports = exports = function(app) {
                 // stopUpdates(resourceObj);
                 // startUpdates(resourceObj);
               });
+
           }
 
       });
@@ -297,11 +324,48 @@ module.exports = exports = function(app) {
 
     // =======================================================================
     //
+    //  Deep copy an Object
+    //
+    // =======================================================================
+     function deepCopyObject(itemObj){
+        var temp = {};
+
+        // problem -  if itemObj.property is another object !!
+        for (var property in itemObj) {
+
+            if (itemObj.hasOwnProperty(property)) {
+                if (typeof itemObj[property] === "object"){
+                  temp[property] = deepCopyObject(itemObj[property]);
+                } else {
+                  temp[property] = itemObj[property];
+                }
+            }
+        }
+        return temp;
+      }
+
+    // =======================================================================
+    //
+    //  Deep copy an array of Objects
+    //
+    // =======================================================================
+    function deepCopyArray(myArray){
+
+      var tempArray = myArray.map(function(itemObj){
+        return deepCopyObject(itemObj);
+      });
+
+      return tempArray;
+    }
+
+    // =======================================================================
+    //
     //  Watch for Drop Down Changes
     //
     // =======================================================================
     function watchForDropDownChanges(){
           var temp;
+          var tempData;
           var dropdownvalues = {};
           dropdownvalues.selectedSalesmen     = $scope.selectedSalesmen;
           dropdownvalues.selectedCustomer     = $scope.selectedCustomer;
@@ -332,7 +396,13 @@ module.exports = exports = function(app) {
                  //   }
                  // });
 
-                temp = filterD3Data($scope.customerData, "customer");
+                // copy $scope.customerData to another array
+                // ... because, somehow, function filterD3Data()
+                // ...... is changing $scope.customerData
+
+                tempData = deepCopyArray($scope.customerData);
+
+                temp = filterD3Data(tempData, "customer");
 
                 if ($scope.d3Object) {
                   console.log("calling buildChart() from watchForDropDownChanges because $scope.d3Object already exists.");
@@ -363,7 +433,13 @@ module.exports = exports = function(app) {
                  //   }
                  // });
 
-                temp = filterD3Data($scope.customerData, "customer");
+                // copy $scope.customerData to another array
+                // ... because, somehow, function filterD3Data()
+                // ...... is changing $scope.customerData
+
+                tempData = deepCopyArray($scope.customerData);
+
+                temp = filterD3Data(tempData, "customer");
 
                 if ($scope.d3Object) {
                   console.log("calling buildChart() from watchForDropDownChanges because $scope.d3Object already exists.");
@@ -401,7 +477,13 @@ module.exports = exports = function(app) {
                  //   }
                  // });
 
-                temp = filterD3Data($scope.salespeopleData, "salespeople");
+                // deep copy $scope.customerData to another array
+                // ... because, somehow, function filterD3Data()
+                // ...... is changing $scope.salespeopleData
+
+                tempData = deepCopyArray($scope.salespeopleData);
+
+                temp = filterD3Data(tempData, "salespeople");
 
                 console.log("after filterD3Data() call");
                 console.log("$scope.salespeopleData");
@@ -462,62 +544,6 @@ module.exports = exports = function(app) {
     //   $scope.uniqueCategories = getUniqueCategories(data);
     // });
 
-
-    // =======================================================================
-    //
-    //  get Drop Down data
-    //
-    // =======================================================================
-
-    dropDownResource.get(function(err, data) {
-
-        // remove "s" from the end of all Product Type Names
-
-        data.DropDowns.Products = data.DropDowns.Products.map(function(element){
-          if (element.Name.endsWith('s') ){
-            element.Name = element.Name.slice(0, -1);
-          }
-          return element;
-        });
-
-        // append two more Product Types
-        data.DropDowns.Products.push({
-          "Name": "Exterior",
-          "Value": 98
-        });
-
-        data.DropDowns.Products.push({
-          "Name": "Interior",
-          "Value": 99
-        });
-
-        // add default value to each drop down array
-        // data.DropDowns.Products.unshift({
-        //   "Name": "All Products",
-        //   "Value": null
-        // });
-
-        // data.DropDowns.Distributors.unshift({
-        //   "Name": "All Distributors",
-        //   "Value": null
-        // });
-
-        // data.DropDowns.Customers.unshift({
-        //   "Name": "All Customers",
-        //   "Value": null
-        // });
-
-        // data.DropDowns.Salesmen.unshift({
-        //   "Name": "All Salesmen",
-        //   "Value": null
-        // });
-
-        $scope.productTypesDropDown = data.DropDowns.Products;
-        $scope.distributorsDropDown = data.DropDowns.Distributors;
-        $scope.customersDropDown    = data.DropDowns.Customers;
-        $scope.salesmenDropDown     = data.DropDowns.Salesmen;
-    });
-
     // =======================================================================
 
     // Create the graph(s) for the view/page.
@@ -540,13 +566,7 @@ module.exports = exports = function(app) {
      var temp = "";
 
      var tempData;
-
-     // commented out because I think this is triggering the watch code
-     //
-     // $scope.selectedProductType = $scope.productTypesDropDown[0];
-     // $scope.selectedDistributor = $scope.distributorsDropDown[0];
-     // $scope.selectedCustomer = $scope.customersDropDown[0];
-     // $scope.selectedSalesmen = $scope.salesmenDropDown[0];
+     var filteredTempData;
 
      // stop updates
 
@@ -562,13 +582,19 @@ module.exports = exports = function(app) {
      if ($scope.currentView === 'overview') {
        console.log('overview page has been loaded into the view.');
 
-       tempData = filterD3Data($scope.customerData, "customer");
+       // deep copy $scope.customerData to another array
+       // ... because, somehow, function filterD3Data()
+       // ...... is changing $scope.customerData
+
+       tempData = deepCopyArray($scope.customerData);
+
+       filteredTempData = filterD3Data(tempData, "customer");
 
        console.log('return to overview page has been loaded into the view.');
-       console.log("tempData");
-       console.log(tempData);
+       console.log("filteredTempData");
+       console.log(filteredTempData);
 
-       $scope.d3Object = D3('pie', 500, 500, tempData);
+       $scope.d3Object = D3('pie', 500, 500, filteredTempData);
 
        $scope.$watch('selectedSalesmen', watchForDropDownChanges);
        $scope.$watch('selectedCustomer', watchForDropDownChanges);
@@ -580,9 +606,15 @@ module.exports = exports = function(app) {
      } else if ($scope.currentView === 'customer') {
        console.log('Customer page has been loaded into the view.');
 
-       tempData = filterD3Data($scope.customerData, "customer");
+       // deep copy $scope.customerData to another array
+       // ... because, somehow, function filterD3Data()
+       // ...... is changing $scope.customerData
 
-       $scope.d3Object = D3('bar', 800, 500, tempData);
+       tempData = deepCopyArray($scope.customerData);
+
+       filteredTempData = filterD3Data(tempData, "customer");
+
+       $scope.d3Object = D3('bar', 800, 500, filteredTempData);
 
        $scope.$watch('selectedSalesmen', watchForDropDownChanges);
        $scope.$watch('selectedCustomer', watchForDropDownChanges);
@@ -594,9 +626,15 @@ module.exports = exports = function(app) {
      } else if ($scope.currentView === 'salespeople') {
        console.log('Salespeople page has been loaded into the view.');
 
-       tempData = filterD3Data($scope.salespeopleData, "salespeople");
+       // deep copy $scope.customerData to another array
+       // ... because, somehow, function filterD3Data()
+       // ...... is changing $scope.salespeopleData
 
-       $scope.d3Object = D3('stacked-chart', 900, 500, tempData);
+       tempData = deepCopyArray($scope.salespeopleData);
+
+       filteredTempData = filterD3Data(tempData, "salespeople");
+
+       $scope.d3Object = D3('stacked-chart', 900, 500, filteredTempData);
 
        $scope.$watch('selectedSalesmen', watchForDropDownChanges);
        $scope.$watch('selectedCustomer', watchForDropDownChanges);
@@ -627,14 +665,23 @@ module.exports = exports = function(app) {
 
             var changedData = [];
 
+            // =====================================================
+            //  copy data array
+            //  ... because having trouble with passing by reference
+            // =====================================================
+
+            var copyOfData = data.map(function(item){
+              return item;
+            });
+
             console.log("");
             console.log("");
             console.log("");
 
             console.log("inside D3 filterD3Data");
 
-            console.log("data");
-            console.log(data);
+            console.log("copyOfData");
+            console.log(copyOfData);
             console.log("");
 
             console.log("dataType");
@@ -645,8 +692,8 @@ module.exports = exports = function(app) {
             // console.log($scope.dropdownvalues);
             // console.log("");
             if ($scope.dropdownvalues === undefined){
-              console.log("returning data because $scope.dropdownvalues is null");
-              return data;
+              console.log("returning copyOfData because $scope.dropdownvalues is null");
+              return copyOfData;
             }
 
 
@@ -700,9 +747,9 @@ module.exports = exports = function(app) {
             // =====================================================================
             //   filter data for the  Customer, Salesmen and Distributor dropdowns
             // =====================================================================
-            console.log("filter data for the  Customer, Salesmen and Distributor dropdowns");
+            console.log("filter copyOfData for the  Customer, Salesmen and Distributor dropdowns");
 
-            changedData = data.filter(function(element, index, array){
+            changedData = copyOfData.filter(function(element, index, array){
 
               console.log("element.Id");
               console.log(element.Id);
@@ -831,7 +878,7 @@ module.exports = exports = function(app) {
         } else {
 
            // no filtering of original data
-           changedData = data;
+           changedData = copyOfData;
 
         }  // end of if( ) {
 
@@ -861,7 +908,7 @@ module.exports = exports = function(app) {
            // =====================================================================
            //   filter data for the  Product Type dropdowns
            // =====================================================================
-           changedData = changedData.map(function(element, index, array){
+           var changedData_2 = changedData.map(function(element, index, array){
 
               var temp = {};
 
@@ -881,7 +928,9 @@ module.exports = exports = function(app) {
 
               return element;
 
-            });  //  changedData = changedData.map(function(element, index, array){
+            });  //  changedData_2 = changedData.map(function(element, index, array){
+
+            changedData = changedData_2;
         }
 
        // =====================================================================

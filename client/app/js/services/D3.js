@@ -147,24 +147,36 @@ module.exports = exports = function(app) {
             .tickFormat(function(d) { return "$" + format(d); }),
           format = d3.format(",");
 
-      this.svg = d3.select('#graph')
-        .append('svg:svg')
-        .attr('width', this.width)
-        .attr('height', this.height)
-        .append('svg:g')
-        // draw y axis
-        .attr("class", "axis")
-        .attr("transform", "translate(" + (leftGutter - barPadding) + ",0)")
-        .call(yAxis);
+      // if svg element does not already exist
+      // ...  create svg element
+      if (d3.select('svg').empty()){
+        this.svg = d3.select('#graph')
+          .append('svg:svg')
+          .attr('width', this.width)
+          .attr('height', this.height)
+          .append('svg:g')
+          // draw y axis
+          .attr("class", "axis")
+          .attr("transform", "translate(" + (leftGutter - barPadding) + ",0)")
+          .call(yAxis);
+      }
 
-      this.svg.selectAll("g.bar")
-        .data(data)
+      var gBar = this.svg.selectAll("g.bar")
+        .data(data);
+
+      // add new bars
+      gBar
         .enter()
         .append("g")
         .attr("class", "bar")
         .append("rect");
 
-      this.svg.selectAll("g.bar").select("rect")
+      // delete any old data bars not neeeded
+      gBar.exit().remove();
+
+      // update
+      // this.svg.selectAll("g.bar").select("rect")
+      gBar.select("rect")
         .attr("width", barWidth)
         .attr("height", function(d) {
           var total = 0;
@@ -185,13 +197,18 @@ module.exports = exports = function(app) {
           return yScale(total);
         });
 
+      // delete text nodes if they exist ?
+      if (!gBar.select("text").empty()) {
+        gBar.select("text").remove();
+      }
       // only create text nodes on the first draw of the chart
-      if (this.svg.selectAll("g.bar").select("text").empty()) {
+      // if (this.svg.selectAll("g.bar").select("text").empty()) {
         this.svg.selectAll("g.bar")
           .append("text")
           .text(function(d) { return d.Name; });
-      }
+      //}
 
+      // update
       this.svg.selectAll("g.bar").select("text")
         .transition()
         .duration(500)
