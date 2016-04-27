@@ -1,7 +1,10 @@
 'use strict';
 
 module.exports = exports = function(app) {
-  app.factory('D3', ['$rootScope', function($rootScope) {
+  // app.factory('D3', ['$rootScope', function($rootScope) {
+  // app.factory('D3', ['$scope', function($scope) {
+  app.factory('D3', [function() {
+
     var d3 = require('d3');
     //var d3_tip = require('d3-tip');
 
@@ -13,6 +16,13 @@ module.exports = exports = function(app) {
     //    $scope.d3Object = D3('stacked-chart', 960, 500, salespeopleResource, 1000);
     // ===========================================================
     var D3 = function(type, width, height, dataFilteredByDropDowns) {
+
+      console.log("");
+      console.log("inside D3 constructor");
+      console.log("dataFilteredByDropDowns");
+      console.log(dataFilteredByDropDowns);
+
+
       this.type = type;
       this.width = width;
       this.height = height;
@@ -22,6 +32,7 @@ module.exports = exports = function(app) {
       // Color range to use for now.
       if (this.type != 'stacked-chart') this.color = d3.scale.category20c();
 
+      console.log("calling D3 buildChart");
       this.buildChart(dataFilteredByDropDowns);
     };
 
@@ -42,6 +53,10 @@ module.exports = exports = function(app) {
 
     D3.prototype.buildChart = function(data) {
 
+      console.log("inside D3 buildChart");
+      console.log("data");
+      console.log(data);
+      console.log("");
       this.create(data);
 
     };
@@ -600,8 +615,8 @@ module.exports = exports = function(app) {
     // ===========================================================
     //  return
     // ===========================================================
-    return function(type, width, height, resource, updateInterval, selected) {
-      return new D3(type, width, height, resource, updateInterval, selected);
+    return function(type, width, height, dataFilteredByDropDowns) {
+      return new D3(type, width, height, dataFilteredByDropDowns);
     };
   }]);
 };
