@@ -57,8 +57,8 @@ var salespeopleDummyData =
 // ==========================================================================
 
 var customerDummyData = [{ 'label':'Stuff',       'value':40 },
-                        { 'label':'Other Stuff', 'value':50 },
-                        { 'label':'Things',      'value':30 }];
+                         { 'label':'Other Stuff', 'value':50 },
+                         { 'label':'Things',      'value':30 }];
 
 // ==========================================================================
 
