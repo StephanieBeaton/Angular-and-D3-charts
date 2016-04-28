@@ -190,7 +190,7 @@ module.exports = exports = function(app) {
           for (var k in d.Totals) {
             total += d.Totals[k];
           }
-          return total;
+          return total > 0 ? total : 0
         })
         .transition()
         .duration(500)

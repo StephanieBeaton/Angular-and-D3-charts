@@ -447,6 +447,7 @@ module.exports = exports = function(app) {
     var getUniqueCategories = function(data) {
       var uniqueCategories = [],
           seenCategories = {};
+
       data.forEach(function(item) {
         Object.keys(item.Totals).forEach(function(key) {
           if (!seenCategories.hasOwnProperty(key)) {
