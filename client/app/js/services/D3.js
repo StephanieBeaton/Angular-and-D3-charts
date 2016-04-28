@@ -29,45 +29,31 @@ module.exports = exports = function(app) {
     };
 
     // ===========================================================
-    //   create()
-    //
-    //   if chart exists, remove all its child elements
-    //   ...  then call createPieChart()
+    //   buildChart()
     //
     //   called in D3.prototype.startUpdates()
     // ===========================================================
-    D3.prototype.create = function(data) {
+    D3.prototype.buildChart = function(data) {
       // Decide which create function to run, depends on the D3 object's type.
       if (this.type === 'pie') this.createPieChart(data);
       if (this.type === 'stacked-chart') this.createStackedChart(data);
       if (this.type === 'bar') this.createBarChart(data);
     };
 
-    D3.prototype.buildChart = function(data) {
+    D3.prototype.createPieChart = function(data){
+          // var width = 800,
+          //     height = 250,
+          //     radius = Math.min(width, height) / 2;
+          var path;
 
-      this.create(data);
+          // Color range to use for now.
+          var color = d3.scale.category20c();
 
-    };
-    // Chart/Graph Creation Functions
-    D3.prototype.createPieChart = function(data) {
+          var arc = d3.svg.arc()
+              .outerRadius(this.radius - 10);
 
-      //  Does <svg> already exist?  If so do not add another one.
-      var svg = d3.select('svg');
-
-      if (svg.empty()){
-
-        this.chart = d3.select('#graph')
-          .append('svg:svg');
-      } else {
-        this.chart = d3.select('svg');
-      }
-
-        this.chart.data([data])
-          .attr('width', this.width)
-          .attr('height', this.height)
-          .append('svg:g')
-          .attr('transform', 'translate(' + this.radius + ',' + this.radius + ')');
-        this.pie = d3.layout.pie()
+          // compute arc angles from data
+          var pie = d3.layout.pie()
           .value(function(d) {
             var total = 0;
             for (var k in d.Totals) {
@@ -76,40 +62,79 @@ module.exports = exports = function(app) {
             return total;
           });
 
+          var svg;
 
-        this.arc = d3.svg.arc()
-          .outerRadius(this.radius);
+            if (!d3.select('.g-child-of-svg').empty()){
+              svg = d3.select('.g-child-of-svg');
 
-        this.arcs = this.chart.selectAll('g.slice')
-          .data(this.pie);
+              change(data, this);
 
-        // new data
-        this.arcs
-          .enter()
-          .append('svg:g')
-          .attr('class', 'slice');
-        // Declare local scope variables for use in anonymous functions to avoid scope issues.
-        var color = this.color, arc = this.arc, radius = this.radius;
+            } else {
+              svg = d3.select('#graph')
+                .append('svg:svg')
+                .data(data)
+                .attr('width', this.width)
+                .attr('height', this.height)
+                .append('svg:g')
+                .attr('class', 'g-child-of-svg')
+                .attr('transform', 'translate(' + this.radius + ',' + this.radius + ')');
 
-        //  .transition().duration(1500)
-        this.arcs.append('svg:path')
-          .attr('fill', function(d, i) { return color(i); })
-          .attr('d', function(d) { return arc(d); });
+                  path = svg.selectAll("path")
+                      .data(pie(data))
+                      .enter()
+                      .append("path");
 
-        // remove old text
-        // this.arcs.selectAll('.pie-text').remove();   // new
 
-        this.arcs.append('svg:text')
-          .attr('class', 'pie-text')
-          .attr('transform', function(d) {
-            d.innerRadius = 0;
-            d.outerRadius = radius;
-            return 'translate(' + arc.centroid(d) + ')';
-          })
-          .attr('text-anchor', 'middle')
-          .text(function(d, i) { return d.Name; });
+                  path.transition()
+                      .duration(500)
+                      .attr("fill", function(d, i) {
+                          return color(d.data.Name);     //  d.Name ==>  d.data.Name
+                      })
+                      .attr("d", arc)
+                      .each(function(d) {
+                          this._current = d;
+                      }); // store the initial angles
 
+
+                   this.path = path;
+            }
+
+
+          function change(data, d3Object) {
+              d3Object.path.data(pie(data));
+              d3Object.path.transition().duration(750).attrTween("d", arcTween); // redraw the arcs
+            //d3Object.path.transition().duration(750).attrTween("d", translateFn(d3Object)); // redraw the arcs
+
+          }
+
+          // Store the displayed angles in _current.
+          // Then, interpolate from _current to the new angles.
+          // During the transition, _current is updated in-place by d3.interpolate.
+
+          function arcTween(a) {
+              var i = d3.interpolate(this._current, a);
+              this._current = i(0);
+              return function(t) {
+                  return arc(i(t));
+              };
+          }
+
+          function translateFn(d3Object) {
+
+            // We only use 'd', but list d,i,a as params just to show can have them as params.
+            // Code only really uses d and t.
+            // return function(d, i, a) {
+            return function(d, i, a) {
+                var j = d3.interpolate(d3Object._current, a);
+                d3Object._current = j(0);
+                return function(t) {
+                    return arc(j(t));
+                };
+            };
+
+          }
     };
+          // ===================================================================
 
     // basic bar chart
     D3.prototype.createBarChart = function(data) {
