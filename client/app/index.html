@@ -9,10 +9,6 @@
 		<link rel="stylesheet" href="css/style.css" media="all" type="text/css">
 		<style>
 
-        body {
-          font: 10px sans-serif;
-        }
-
         .axis path,
         .axis line {
           fill: none;
@@ -61,21 +57,43 @@
 
 						<!-- dropdown menu filters -->
 						<!-- TODO: build these dynamically from data using ng-option -->
-						<p>Select an option:</p>
-						<select>
-							<option>An option</option>
-							<option>Another option</option>
-						</select>
-						<p>Select another option:</p>
-						<select>
-							<option>An option</option>
-							<option>Another option</option>
-						</select>
-						<p>Select another option:</p>
-						<select>
-							<option>An option</option>
-							<option>Another option</option>
-						</select>
+            <p>Date Range</p>
+            <select>
+              <option>An option</option>
+              <option>Another option</option>
+            </select>
+            <p>Salesmen</p>
+            <!--
+            <p>selected item is : {{selectedSalesmen}}</p>
+            <p> age of selected item is : {{selectedSalesmen.Value}} </p>
+            -->
+            <select ng-model="selectedSalesmen" ng-options="salesman.Name for salesman in salesmenDropDown">
+                 <option value="">All Salesmen</option>
+             </select>
+            <p>Customer</p>
+            <!--
+            <p>selected item is : {{selectedCustomer}}</p>
+            <p> age of selected item is : {{selectedCustomer.Value}} </p>
+            -->
+            <select ng-model="selectedCustomer" ng-options="customer.Name for customer in customersDropDown">
+                  <option value="">All Customers</option>
+            </select>
+            <p>Product type</p>
+            <!--
+      	    <p>selected item is : {{selectedProductType}}</p>
+            <p> age of selected item is : {{selectedProductType.Value}} </p>
+            -->
+            <select ng-model="selectedProductType" ng-options="productType.Name for productType in productTypesDropDown">
+                  <option value="">All Products</option>
+            </select>
+            <p>Distributor</p>
+            <!--
+            <p>selected item is : {{selectedDistributor}}</p>
+            <p> age of selected item is : {{selectedDistributor.Value}} </p>
+            -->
+            <select ng-model="selectedDistributor" ng-options="distributor.Name for distributor in distributorsDropDown">
+                 <option value="">All Distributors</option>
+             </select>
 					</div>
 
 					<section data-ui-view class="col-lg-9"></section>

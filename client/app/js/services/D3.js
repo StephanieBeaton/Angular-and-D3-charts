@@ -1,94 +1,12 @@
 'use strict';
 
 module.exports = exports = function(app) {
-  app.factory('D3', ['$rootScope', function($rootScope) {
+  // app.factory('D3', ['$rootScope', function($rootScope) {
+  // app.factory('D3', ['$scope', function($scope) {
+  app.factory('D3', [function() {
+
     var d3 = require('d3');
-    //var d3_tip = require('d3-tip');
-
-    /*
-    var salesData =
-     [{
-        Totals: {
-          Interior: 5310.9,
-          Exterior: 47411.01,
-          Window: 26725.215,
-          Moulding: 1741.07,
-          Siding: 476.5,
-          Decking: 11469.92,
-          Skylight: 10215.76
-        },
-        Name: "Test User",
-        Id: 7
-      },
-      {
-        Totals: {
-          Interior: 0,
-          Exterior: 0,
-          Window: 0,
-          Moulding: 0,
-          Siding: 0,
-          Decking: 0,
-          Skylight: 0
-        },
-        Name: "Test User2",
-        Id: 8
-      }];
-    */
-
-    var salesData =
-    [
-      {
-        "Totals": {},
-        "Name": "mail Test",
-        "Id": 5
-      },
-      {
-        "Totals": {
-          "Exterior": 13887.15,
-          "Window": 16777.215,
-          "Interior": 3026.09,
-          "Decking": 6840.5,
-          "Skylight": 3985.43,
-          "Moulding": 1721.83,
-          "Siding": 202.89
-        },
-        "Name": "Test User",
-        "Id": 7
-      },
-      {
-        "Totals": {
-          "Skylight": 157.84,
-          "Window": 6978.52
-        },
-        "Name": "Jason Lindquist",
-        "Id": 94
-      },
-      {
-        "Totals": {},
-        "Name": "Jason Parchomchuk",
-        "Id": 262
-      },
-      {
-        "Totals": {
-          "Interior": 446.32,
-          "Moulding": 83.2,
-          "Window": 202,
-          "Skylight": 207
-        },
-        "Name": "Jason Lindquist",
-        "Id": 300
-      },
-      {
-        "Totals": {
-          "Siding": 3.87
-        },
-        "Name": "Jonny Tester",
-        "Id": 301
-      }
-    ];
-
-
-
+    d3.tip = require('d3-tip');
     // ===========================================================
     //   D3 constructor function
     //
@@ -96,91 +14,126 @@ module.exports = exports = function(app) {
     //    $scope.d3Object = D3('pie', 500, 500, overviewResource, 1000);
     //    $scope.d3Object = D3('stacked-chart', 960, 500, salespeopleResource, 1000);
     // ===========================================================
-    var D3 = function(type, width, height, resource, updateInterval) {
+    var D3 = function(type, width, height, dataFilteredByDropDowns) {
       this.type = type;
       this.width = width;
       this.height = height;
-      this.resource = resource;
-      // The updateInterval is the rate at which the graph will check for new data and refresh itself.  This value is in milliseconds (ex: 1000 = 1 update/second).
-      this.updateInterval = updateInterval;
+
       // The specified with determines a pie chart's radius.
       if (this.type === 'pie') this.radius = this.width / 2;
       // Color range to use for now.
       if (this.type != 'stacked-chart') this.color = d3.scale.category20c();
-      // Sets this data to be used if the the D3 object's resource argument is null.
-      if (this.type === 'pie') this.dummyData = [{ 'label':'Stuff', 'value':40 }, { 'label':'Other Stuff', 'value':50 }, { 'label':'Things', 'value':30 }];
-      if (this.type === 'stacked-chart') this.dummyData = salesData;
 
-      this.data = this.resource === null ? this.dummyData : this.resource.get(function(data) { return data; });
-
-      this.buildChart();
+      this.buildChart(dataFilteredByDropDowns);
     };
 
     // ===========================================================
-    //   create()
+    //   buildChart()
     //
-    //   if chart exists, remove all its child elements
-    //   ...  then call createPieChart()
+    //   called in D3.prototype.startUpdates()
     // ===========================================================
-    D3.prototype.create = function(data) {
-      // Remove child elements if they're there.
-      var graph = document.getElementById('graph');
-      if (graph.hasChildNodes()) while (graph.firstChild) graph.removeChild(graph.firstChild);
+    D3.prototype.buildChart = function(data) {
       // Decide which create function to run, depends on the D3 object's type.
       if (this.type === 'pie') this.createPieChart(data);
       if (this.type === 'stacked-chart') this.createStackedChart(data);
       if (this.type === 'bar') this.createBarChart(data);
     };
 
-    D3.prototype.buildChart = function() {
-      var self = this;
+    D3.prototype.createPieChart = function(data){
+          // var width = 800,
+          //     height = 250,
+          //     radius = Math.min(width, height) / 2;
+          var path;
 
-      this.resource === null ? this.dummyData : this.resource.get(function(err, data) {
-        // emit an event up the scope chain with the newly fetched data
-        $rootScope.$emit('dataUpdated', data);
+          // Color range to use for now.
+          var color = d3.scale.category20c();
 
-        self.create(data);
-        self.startUpdates();
-      });
-    };
-    // Chart/Graph Creation Functions
-    D3.prototype.createPieChart = function(data) {
-      this.chart = d3.select('#graph')
-        .append('svg:svg')
-        .data([data])
-        .attr('width', this.width)
-        .attr('height', this.height)
-        .append('svg:g')
-        .attr('transform', 'translate(' + this.radius + ',' + this.radius + ')');
-      this.pie = d3.layout.pie()
-        .value(function(d) { 
-          var total = 0;
-          for (var k in d.Totals) {
-            total += d.Totals[k];
+          var arc = d3.svg.arc()
+              .outerRadius(this.radius - 10);
+
+          // compute arc angles from data
+          var pie = d3.layout.pie()
+          .value(function(d) {
+            var total = 0;
+            for (var k in d.Totals) {
+              total += d.Totals[k];
+            }
+            return total;
+          });
+
+          var svg;
+
+            if (!d3.select('.g-child-of-svg').empty()){
+              svg = d3.select('.g-child-of-svg');
+
+              change(data, this);
+
+            } else {
+              svg = d3.select('#graph')
+                .append('svg:svg')
+                .data(data)
+                .attr('width', this.width)
+                .attr('height', this.height)
+                .append('svg:g')
+                .attr('class', 'g-child-of-svg')
+                .attr('transform', 'translate(' + this.radius + ',' + this.radius + ')');
+
+                  path = svg.selectAll("path")
+                      .data(pie(data))
+                      .enter()
+                      .append("path");
+
+
+                  path.transition()
+                      .duration(500)
+                      .attr("fill", function(d, i) {
+                          return color(d.data.Name);     //  d.Name ==>  d.data.Name
+                      })
+                      .attr("d", arc)
+                      .each(function(d) {
+                          this._current = d;
+                      }); // store the initial angles
+
+
+                   this.path = path;
+            }
+
+
+          function change(data, d3Object) {
+              d3Object.path.data(pie(data));
+              d3Object.path.transition().duration(750).attrTween("d", arcTween); // redraw the arcs
+            //d3Object.path.transition().duration(750).attrTween("d", translateFn(d3Object)); // redraw the arcs
+
           }
-          return total;
-        });
-      this.arc = d3.svg.arc()
-        .outerRadius(this.radius);
-      this.arcs = this.chart.selectAll('g.slice')
-        .data(this.pie)
-        .enter()
-        .append('svg:g')
-        .attr('class', 'slice');
-      // Declare local scope variables for use in anonymous functions to avoid scope issues.
-      var color = this.color, arc = this.arc, data = this.data, radius = this.radius;
-      this.arcs.append('svg:path')
-        .attr('fill', function(d, i) { return color(i); })
-        .attr('d', function(d) { return arc(d); });
-      this.arcs.append('svg:text')
-        .attr('transform', function(d) {
-          d.innerRadius = 0;
-          d.outerRadius = radius;
-          return 'translate(' + arc.centroid(d) + ')';
-        })
-        .attr('text-anchor', 'middle')
-        .text(function(d, i) { return d.Name; });
+
+          // Store the displayed angles in _current.
+          // Then, interpolate from _current to the new angles.
+          // During the transition, _current is updated in-place by d3.interpolate.
+
+          function arcTween(a) {
+              var i = d3.interpolate(this._current, a);
+              this._current = i(0);
+              return function(t) {
+                  return arc(i(t));
+              };
+          }
+
+          function translateFn(d3Object) {
+
+            // We only use 'd', but list d,i,a as params just to show can have them as params.
+            // Code only really uses d and t.
+            // return function(d, i, a) {
+            return function(d, i, a) {
+                var j = d3.interpolate(d3Object._current, a);
+                d3Object._current = j(0);
+                return function(t) {
+                    return arc(j(t));
+                };
+            };
+
+          }
     };
+          // ===================================================================
 
     // basic bar chart
     D3.prototype.createBarChart = function(data) {
@@ -193,7 +146,7 @@ module.exports = exports = function(app) {
           yScale = d3.scale.linear()
             // arbitrary domain
             .domain([0, 30000])
-            .range([this.height, 0]),
+            .range([this.height -5, 10]),
           yAxis = d3.svg.axis()
             .scale(yScale)
             .orient("left")
@@ -201,26 +154,38 @@ module.exports = exports = function(app) {
             .tickFormat(function(d) { return "$" + format(d); }),
           format = d3.format(",");
 
-      this.svg = d3.select('#graph')
-        .append('svg:svg')
-        .attr('width', this.width)
-        .attr('height', this.height)
-        .append('svg:g')
-        // draw y axis
-        .attr("class", "axis")
-        .attr("transform", "translate(" + (leftGutter - barPadding) + ",0)")
-        .call(yAxis);
+      // if svg element does not already exist
+      // ...  create svg element
+      if (d3.select('svg').empty()){
+        this.svg = d3.select('#graph')
+          .append('svg:svg')
+          .attr('width', this.width)
+          .attr('height', this.height)
+          .append('svg:g')
+          // draw y axis
+          .attr("class", "axis")
+          .attr("transform", "translate(" + (leftGutter - barPadding) + ",0)")
+          .call(yAxis);
+      }
 
-      this.svg.selectAll("g.bar")
-        .data(data)
+      var gBar = this.svg.selectAll("g.bar")
+        .data(data);
+
+      // add new bars
+      gBar
         .enter()
         .append("g")
         .attr("class", "bar")
         .append("rect");
 
-      this.svg.selectAll("g.bar").select("rect")
+      // delete any old data bars not neeeded
+      gBar.exit().remove();
+
+      // update
+      // this.svg.selectAll("g.bar").select("rect")
+      gBar.select("rect")
         .attr("width", barWidth)
-        .attr("height", function(d) { 
+        .attr("height", function(d) {
           var total = 0;
           for (var k in d.Totals) {
             total += d.Totals[k];
@@ -231,21 +196,26 @@ module.exports = exports = function(app) {
         .duration(500)
         .style("fill", function(d, i) { return color(i); })
         .attr("x", function(d, i) { return (i * barWidth) + (i * barPadding) + leftGutter; })
-        .attr("y", function(d) { 
+        .attr("y", function(d) {
           var total = 0;
           for (var k in d.Totals) {
             total += d.Totals[k];
           }
-          return yScale(total); 
+          return yScale(total);
         });
 
+      // delete text nodes if they exist ?
+      if (!gBar.select("text").empty()) {
+        gBar.select("text").remove();
+      }
       // only create text nodes on the first draw of the chart
-      if (this.svg.selectAll("g.bar").select("text").empty()) {
+      // if (this.svg.selectAll("g.bar").select("text").empty()) {
         this.svg.selectAll("g.bar")
           .append("text")
-          .text(function(d) { return d.Name });
-      }
+          .text(function(d) { return d.Name; });
+      //}
 
+      // update
       this.svg.selectAll("g.bar").select("text")
         .transition()
         .duration(500)
@@ -256,34 +226,8 @@ module.exports = exports = function(app) {
           }
           return "translate(" + ((i * barWidth + 12) + (i * barPadding) + leftGutter) + "," + (yScale(total) - 10) + ") rotate(270)";
         });
-    }
-
-    // Chart/Graph Update Functions
-
-    // ===========================================================
-    //   startUpdates  -  Chart/Graph start update function
-    //
-    // called from js/controllers/appController.js
-    //
-    // ===========================================================
-    D3.prototype.startUpdates = function() {
-      var d3Object = this;
-      this.updates = setInterval(function() {
-        console.log('Updating the D3 object.');
-        d3Object.data = d3Object.resource !== null ? d3Object.resource.get(function(data) { return data; }) : d3Object.data;
-        d3Object.create();
-      }, this.updateInterval);
     };
 
-    // ===========================================================
-    //   stopUpdates  -  Chart/Graph stop update function
-    //
-    // called from js/controllers/appController.js
-    //
-    // ===========================================================
-    D3.prototype.stopUpdates = function() {
-      if (typeof this.updates !== 'undefined') clearInterval(this.updates);
-    };
 
     // ===========================================================
     //   createStackedChart  -  sort of private function
@@ -292,8 +236,6 @@ module.exports = exports = function(app) {
     //
     // ===========================================================
     D3.prototype.createStackedChart = function(data) {
-
-            //var data=this.data;
 
             // ============================================================
             // loop thru data array
@@ -309,10 +251,6 @@ module.exports = exports = function(app) {
 
             });
 
-             // console.log("productTypeObj");
-             // console.log(productTypeObj);
-
-
              // loop thru the properties of productTypeObj
              // and create an array of strings of the properties of productTypeObj
 
@@ -324,14 +262,11 @@ module.exports = exports = function(app) {
                   }
               }
 
-              // console.log("productTypes");
-              // console.log(productTypes);
 
              // ============================================================
-
-              //  loop thru data array
-              //  If an item/object in the array is missing one of the product types in ProductTypes
-              //  ... then add the property to the item/object
+             //  loop thru data array
+             //  If an item/object in the array is missing one of the product types in ProductTypes
+             //  ... then add the property to the item/object
              // ============================================================
 
              data.forEach(function(d){
@@ -349,7 +284,6 @@ module.exports = exports = function(app) {
              var pathClass="path";
              var xScale, yScale, xAxisGen, yAxisGen, lineFun;
 
-             // var d3 = $window.d3;
 
              // ============================================================
 
@@ -389,36 +323,29 @@ module.exports = exports = function(app) {
                   .tickFormat(d3.format(".2s"));
 
 
-              // from  createPieChart()
-              //
-              // this.chart = d3.select('#graph')
-              //   .append('svg:svg')
-              //   .data([this.data])
-              //   .attr('width', this.width)
-              //   .attr('height', this.height)
-              //   .append('svg:g')
+              //  Does <svg> alrready exist?  If so do not add another one.
+              var svg = d3.select('svg');
 
-              //  FIX THIS  !!!
-
-              //  commented out because done in "create()"
-              // var svg = d3.selectAll('g.child').remove();
-              d3.select('#graph')
-                .append('svg');
-
-              // var rawSvg=elem.find('svg');
+              if (svg.empty()){
+                d3.select('#graph')
+                  .append('svg');
 
 
-              // single g group element parent of all other elements in svg
+                // single g group element parent of all other elements in svg
 
-              // var svg = d3.select(rawSvg[0])
-              var svg = d3.select('svg')
-                  .attr("width", width + margin.left + margin.right)
-                  .attr("height", height + margin.top + margin.bottom)
-                  .append("g")
-                  .attr("class", "child")
-                  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                svg = d3.select('svg')
+                    .attr("width", width + margin.left + margin.right)
+                    .attr("height", height + margin.top + margin.bottom)
+                    .append("g")
+                    .attr("class", "child")
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-              this.chart = svg;
+                this.chart = svg;   // not convinced this is necessary for stacked-chart
+
+              } else {
+                svg = d3.select('.child');
+              }
+
 
                 // set domain of color scale
                 // this returns all the keys in one object in the array of objects "data"
@@ -468,9 +395,6 @@ module.exports = exports = function(app) {
                 data.forEach(function(d) {
                   d.cummulativeSales = color.domain().map(function(name) { return {name: name, y0: 0,  productVolume: +d.Totals[name], y1: 0}; });
 
-                  // console.log("d.cummulativeSales");
-                  // console.log(d.cummulativeSales);
-
                  // sort items in cummulativeSales array by productVolume descending
                   d.cummulativeSales.sort(function(a, b) { return b.productVolume - a.productVolume;});
 
@@ -512,14 +436,26 @@ module.exports = exports = function(app) {
                 y.domain([0, d3.max(data, function(d) { return d.total; })]);
 
                 // add x axis
-                // ... translate x axis down by height pixels
+                var x_axis = svg.select(".x");
+
+                if (!x_axis.empty()) {
+                  x_axis.remove();
+                }
+
                 svg.append("g")
                     .attr("class", "x axis")
                     .attr("transform", "translate(0," + height + ")")
                     .call(xAxis);
 
+
                 // add y axis
                 // ... fancy code to handle y axis labels
+                var y_axis = svg.select(".y");
+
+                if (!y_axis.empty()) {
+                  y_axis.remove();
+                }
+
                 svg.append("g")
                     .attr("class", "y axis")
                     .call(yAxis)
@@ -534,14 +470,14 @@ module.exports = exports = function(app) {
 
                 // tool tip
                 // http://bl.ocks.org/Caged/6476579
-                // var tip = d3_tip.tip()
-                // .attr('class', 'd3-tip')
-                // .offset([-10, 0])
-                // .html(function(d) {
-                //   return "<strong style='color:red'>Volume:</strong> <span style='color:red'>" + d.total + "</span>";
-                // });
+                var tip = d3.tip()
+                  .attr('class', 'd3-tip')
+                  .offset([-10, 0])
+                  .html(function(d) {
+                    return "<strong style='color:red'>Volume:</strong> <span style='color:red'>" + d.total + "</span>";
+                  });
 
-                // svg.call(tip);
+                svg.call(tip);
 
 
                 //  http://javascript.tutorialhorizon.com/2014/11/20/a-visual-explanation-of-the-enter-update-and-exit-selections-in-d3js/
@@ -550,31 +486,50 @@ module.exports = exports = function(app) {
                 //
                 //  each of these new g elements is a column
                 //  The data for each g element is the object in the data array
+
+
                 var state = svg.selectAll(".salesperson")
-                    .data(data)
-                  .enter().append("g")
-                    .attr("class", "g")
+                    .data(data, function(d){ return d.Name; });
+
+                // new data
+                //                     .attr("class", "g")   removed
+                state.enter().append("g")
+                    .attr("class", "salesperson")
+                    .attr('class', 'g')
+                    .attr("x", 0)
+                    .transition().duration(1500)
                     .attr("transform", function(d) { return "translate(" + x(d.Name) + ",0)"; });
+
+                // removed data:
+                state.exit().remove();
+
+                // updated data:
+                state.attr("class", "salesperson")
+                     .attr("x", 0)
+                     .transition().duration(1500)
+                     .attr("transform", function(d) { return "translate(" + x(d.Name) + ",0)"; });
+
 
                // STOPPED WORKING AFTER MERGE WITH JAMES SERVICES CONCEPT
                // tool tip
-               // var columns = svg.selectAll(".g")
-               //      .on('mouseover', tip.show)
-               //      .on('mouseout', tip.hide);
+               var columns = svg.selectAll(".g")
+                    .on('mouseover', tip.show)
+                    .on('mouseout', tip.hide);
                // ===========================================================
-
-                //  Latest attempt at fix
 
                 // You are appending the text to rect elements -- this isn't valid in SVG
                 // and the text won't show up.
                 // Instead, append the text either to a g element or the top-level SVG:
 
+                svg.selectAll("text.bar").remove();
+
                 svg.selectAll("text.bar")
                   .data(data)
                 .enter().append("text")
-                  //.attr("transform", "rotate(-90)")
-                  //.attr("class", "bar")
+                  // .attr("transform", "rotate(-90)")
+                  // .attr("class", "bar")
                   .attr("text-anchor", "middle")
+                  .attr("class", "bar")
                   .attr("x", function(d) { return x(d.Name) + x.rangeBand()/2; })
                   .attr("y", function(d) { return height - 30; })
                   .style("fill", "black")
@@ -590,14 +545,42 @@ module.exports = exports = function(app) {
                 //
                 //  cummulativeSales array elements are the data here
 
-                state.selectAll("rect")
-                    .data(function(d) { return d.cummulativeSales; })
-                  .enter().append("rect")
+
+                // state.selectAll("rect")
+                //     .data(function(d) { return d.cummulativeSales; })
+                //   .enter().append("rect")
+                //     .transition().duration(750)
+                //     .attr("width", x.rangeBand())
+                //     .attr("y", function(d) { return y(d.y1); })
+                //     .attr("height", function(d) { return y(d.y0) - y(d.y1); })
+                //     .style("fill", function(d) { return color(d.name); });
+                //
+
+                var bar = state.selectAll("rect")
+                            .data(function(d) { return d.cummulativeSales; });  // doesn't this need another function ?
+
+                // new data
+                bar.enter().append("rect")
                     .attr("width", x.rangeBand())
                     .attr("y", function(d) { return y(d.y1); })
+                    .attr("height", function(d) { return 0; })
+                    .transition().duration(1500)
                     .attr("height", function(d) { return y(d.y0) - y(d.y1); })
                     .style("fill", function(d) { return color(d.name); });
 
+                // removed data:
+                bar.exit().remove();
+
+                // updated data:
+                 bar.attr("y", function(d) { return y(d.y1); })
+                    .attr("width", x.rangeBand())
+                    .attr("height", function(d) { return 0; })
+                    .transition().duration(1500)
+                    .attr("height", function(d) { return y(d.y0) - y(d.y1); })
+                    .style("fill", function(d) { return color(d.name); });
+
+                   // "x" is set from parent element g ??
+                   // not added from "enter()".
 
 
                 // add fancy legend
@@ -629,11 +612,12 @@ module.exports = exports = function(app) {
 
     };     //  D3.prototype.createStackedChart = function() {
 
+
     // ===========================================================
     //  return
     // ===========================================================
-    return function(type, width, height, resource, updateInterval) {
-      return new D3(type, width, height, resource, updateInterval);
+    return function(type, width, height, dataFilteredByDropDowns) {
+      return new D3(type, width, height, dataFilteredByDropDowns);
     };
   }]);
 };
