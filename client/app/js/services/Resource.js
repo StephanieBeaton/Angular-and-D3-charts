@@ -12,6 +12,7 @@
 
 var success = function(cb) { return function(res) { cb(null, res.data); }; };
 var failure = function(cb) { return function(res) { cb(res); }; };
+
 module.exports = exports = function(app) {
   app.factory('Resource', ['$http', function($http) {
     var Resource = function(resource) {
