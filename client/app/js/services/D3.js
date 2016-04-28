@@ -6,8 +6,7 @@ module.exports = exports = function(app) {
   app.factory('D3', [function() {
 
     var d3 = require('d3');
-    //var d3_tip = require('d3-tip');
-
+    d3.tip = require('d3-tip');
     // ===========================================================
     //   D3 constructor function
     //
@@ -147,7 +146,7 @@ module.exports = exports = function(app) {
           yScale = d3.scale.linear()
             // arbitrary domain
             .domain([0, 30000])
-            .range([this.height, 0]),
+            .range([this.height -5, 10]),
           yAxis = d3.svg.axis()
             .scale(yScale)
             .orient("left")
@@ -471,14 +470,14 @@ module.exports = exports = function(app) {
 
                 // tool tip
                 // http://bl.ocks.org/Caged/6476579
-                // var tip = d3_tip.tip()
-                // .attr('class', 'd3-tip')
-                // .offset([-10, 0])
-                // .html(function(d) {
-                //   return "<strong style='color:red'>Volume:</strong> <span style='color:red'>" + d.total + "</span>";
-                // });
+                var tip = d3.tip()
+                  .attr('class', 'd3-tip')
+                  .offset([-10, 0])
+                  .html(function(d) {
+                    return "<strong style='color:red'>Volume:</strong> <span style='color:red'>" + d.total + "</span>";
+                  });
 
-                // svg.call(tip);
+                svg.call(tip);
 
 
                 //  http://javascript.tutorialhorizon.com/2014/11/20/a-visual-explanation-of-the-enter-update-and-exit-selections-in-d3js/
@@ -496,6 +495,7 @@ module.exports = exports = function(app) {
                 //                     .attr("class", "g")   removed
                 state.enter().append("g")
                     .attr("class", "salesperson")
+                    .attr('class', 'g')
                     .attr("x", 0)
                     .transition().duration(1500)
                     .attr("transform", function(d) { return "translate(" + x(d.Name) + ",0)"; });
@@ -512,9 +512,9 @@ module.exports = exports = function(app) {
 
                // STOPPED WORKING AFTER MERGE WITH JAMES SERVICES CONCEPT
                // tool tip
-               // var columns = svg.selectAll(".g")
-               //      .on('mouseover', tip.show)
-               //      .on('mouseout', tip.hide);
+               var columns = svg.selectAll(".g")
+                    .on('mouseover', tip.show)
+                    .on('mouseout', tip.hide);
                // ===========================================================
 
                 // You are appending the text to rect elements -- this isn't valid in SVG
@@ -526,8 +526,8 @@ module.exports = exports = function(app) {
                 svg.selectAll("text.bar")
                   .data(data)
                 .enter().append("text")
-                  //.attr("transform", "rotate(-90)")
-                  //.attr("class", "bar")
+                  // .attr("transform", "rotate(-90)")
+                  // .attr("class", "bar")
                   .attr("text-anchor", "middle")
                   .attr("class", "bar")
                   .attr("x", function(d) { return x(d.Name) + x.rangeBand()/2; })
@@ -545,16 +545,16 @@ module.exports = exports = function(app) {
                 //
                 //  cummulativeSales array elements are the data here
 
-                /*
-                state.selectAll("rect")
-                    .data(function(d) { return d.cummulativeSales; })
-                  .enter().append("rect")
-                    .transition().duration(750)
-                    .attr("width", x.rangeBand())
-                    .attr("y", function(d) { return y(d.y1); })
-                    .attr("height", function(d) { return y(d.y0) - y(d.y1); })
-                    .style("fill", function(d) { return color(d.name); });
-                */
+
+                // state.selectAll("rect")
+                //     .data(function(d) { return d.cummulativeSales; })
+                //   .enter().append("rect")
+                //     .transition().duration(750)
+                //     .attr("width", x.rangeBand())
+                //     .attr("y", function(d) { return y(d.y1); })
+                //     .attr("height", function(d) { return y(d.y0) - y(d.y1); })
+                //     .style("fill", function(d) { return color(d.name); });
+                //
 
                 var bar = state.selectAll("rect")
                             .data(function(d) { return d.cummulativeSales; });  // doesn't this need another function ?

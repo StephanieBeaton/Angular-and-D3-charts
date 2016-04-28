@@ -97,9 +97,7 @@ var dropdownDummyData =
 
 module.exports = exports = function(app) {
 
-  // app.controller('appController', ['$rootScope', '$scope', '$http', 'Resource', 'D3', function($rootScope, $scope, $http, Resource, D3) {
-
-  app.controller('appController', ['$scope', '$http', 'Resource', 'D3', function($scope, $http, Resource, D3) {
+  app.controller('appController', ['$rootScope', '$scope', '$http', 'Resource', 'D3', function($rootScope, $scope, $http, Resource, D3) {
 
     // $scope  - documentation
     //
@@ -123,7 +121,7 @@ module.exports = exports = function(app) {
     // $scope.selectedDistributor;
     //
     //  CURRENTLY NOT USED
-    // $scope.currentData ;
+    // $scope.currentData;
     // $scope.uniqueCategories = getUniqueCategories(data);
     //
     //  DROP DOWN CONTENTS
@@ -153,7 +151,7 @@ module.exports = exports = function(app) {
 
     var salespeopleResource = Resource('./data/ordersBySalesperson.json');
     var customerResource    = Resource('./data/ordersByCustomer.json');
-    var quoteResource       = null;
+    var quoteResource       = Resource('./data/ordersByQuote.json');
 
     // =======================================================================
 
@@ -232,7 +230,7 @@ module.exports = exports = function(app) {
 
              resourceObj.resource.get(function(err, data) {
                 // emit an event up the scope chain with the newly fetched data
-                // $rootScope.$emit('dataUpdated', data);
+                $rootScope.$emit('dataUpdated', data);
 
                 $scope[resourceObj.name + "Data"] = data;
 
@@ -334,13 +332,13 @@ module.exports = exports = function(app) {
                  // stop updates
 
                  // temporarily commenting out
-                 // resources.forEach(function(resourceObj){
-                 //   if (resourceObj.name === "customer"){
-                 //     if ($scope[resourceObj.name + "Updates"] !== null){
-                 //       stopUpdates(resourceObj);
-                 //     }
-                 //   }
-                 // });
+                 resources.forEach(function(resourceObj){
+                   if (resourceObj.name === "customer"){
+                     if ($scope[resourceObj.name + "Updates"] !== null){
+                       stopUpdates(resourceObj);
+                     }
+                   }
+                 });
 
                 // copy $scope.customerData to another array
                 // ... because, somehow, function filterD3Data()
@@ -359,24 +357,24 @@ module.exports = exports = function(app) {
                  // start updates
 
                  // temporarily commenting out
-                 // resources.forEach(function(resourceObj){
-                 //   if (resourceObj.name === "customer"){
-                 //     startUpdates(resourceObj);
-                 //   }
-                 // });
+                 resources.forEach(function(resourceObj){
+                   if (resourceObj.name === "customer"){
+                     startUpdates(resourceObj);
+                   }
+                 });
 
               } else if ($scope.currentView === 'customer'){
 
                  // stop updates
 
                  // temporarily commenting out
-                 // resources.forEach(function(resourceObj){
-                 //   if (resourceObj.name === "customer"){
-                 //     if ($scope[resourceObj.name + "Updates"] !== null){
-                 //       stopUpdates(resourceObj);
-                 //     }
-                 //   }
-                 // });
+                 resources.forEach(function(resourceObj){
+                   if (resourceObj.name === "customer"){
+                     if ($scope[resourceObj.name + "Updates"] !== null){
+                       stopUpdates(resourceObj);
+                     }
+                   }
+                 });
 
                 // copy $scope.customerData to another array
                 // ... because, somehow, function filterD3Data()
@@ -470,10 +468,10 @@ module.exports = exports = function(app) {
     // We'll store that data in scope here, and that way it will be available to
     // directives and templates as well.
 
-    // $rootScope.$on('dataUpdated', function(evt, data) {
-    //   $scope.currentData = data;
-    //   $scope.uniqueCategories = getUniqueCategories(data);
-    // });
+    $rootScope.$on('dataUpdated', function(evt, data) {
+      $scope.currentData = data;
+      $scope.uniqueCategories = getUniqueCategories(data);
+    });
 
     // =======================================================================
 
@@ -498,13 +496,13 @@ module.exports = exports = function(app) {
      // stop updates
 
      // temporarily commented out for debugging
-     // resources.forEach(function(resourceObj){
-     //   if (resourceObj.name !== "dropdown"){
-     //     if ($scope[resourceObj.name + "Updates"] !== null){
-     //       stopUpdates(resourceObj);
-     //     }
-     //   }
-     // });
+     resources.forEach(function(resourceObj){
+       if (resourceObj.name !== "dropdown"){
+         if ($scope[resourceObj.name + "Updates"] !== null){
+           stopUpdates(resourceObj);
+         }
+       }
+     });
 
      if ($scope.currentView === 'overview') {
 
@@ -566,11 +564,11 @@ module.exports = exports = function(app) {
 
      // start updates
      // temporarily commented out for debuggin
-     // resources.forEach(function(resourceObj){
-     //   if (resourceObj.name === temp){
-     //      startUpdates(resourceObj);
-     //   }
-     // });
+     resources.forEach(function(resourceObj){
+       if (resourceObj.name === temp){
+          startUpdates(resourceObj);
+       }
+     });
 
 
    });
