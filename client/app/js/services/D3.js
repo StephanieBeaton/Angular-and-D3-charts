@@ -521,9 +521,7 @@ module.exports = exports = function(app) {
                 // and the text won't show up.
                 // Instead, append the text either to a g element or the top-level SVG:
 
-                console.log("before remove()");
                 svg.selectAll("text.bar").remove();
-                console.log("after remove()");
 
                 svg.selectAll("text.bar")
                   .data(data)
