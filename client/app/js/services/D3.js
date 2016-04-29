@@ -137,16 +137,19 @@ module.exports = exports = function(app) {
 
     // basic bar chart
     D3.prototype.createBarChart = function(data) {
-      var barWidth = 15,
+      var self = this,
+          barWidth = 15,
           barPadding = 5,
           leftGutter = 75,
+          labelXOffset = 3,
+          bottomGutter = 150,
           color = this.color,
           // TODO: maybe abstract out any scale and axis functionality
           // that might be used by multiple chart types
           yScale = d3.scale.linear()
             // arbitrary domain
             .domain([0, 30000])
-            .range([this.height -5, 10]),
+            .range([this.height - bottomGutter, 10]),
           yAxis = d3.svg.axis()
             .scale(yScale)
             .orient("left")
@@ -190,12 +193,12 @@ module.exports = exports = function(app) {
           for (var k in d.Totals) {
             total += d.Totals[k];
           }
-          return total > 0 ? total : 0
+          return self.height - bottomGutter - yScale(total);
         })
         .transition()
         .duration(500)
         .style("fill", function(d, i) { return color(i); })
-        .attr("x", function(d, i) { return (i * barWidth) + (i * barPadding) + leftGutter; })
+        .attr("x", function(d, i) { return (i * barWidth) + (i * barPadding); })
         .attr("y", function(d) {
           var total = 0;
           for (var k in d.Totals) {
@@ -224,7 +227,7 @@ module.exports = exports = function(app) {
           for (var k in d.Totals) {
             total += d.Totals[k];
           }
-          return "translate(" + ((i * barWidth + 12) + (i * barPadding) + leftGutter) + "," + (yScale(total) - 10) + ") rotate(270)";
+          return "translate(" + ((i * barWidth + labelXOffset) + (i * barPadding)) + "," + (self.height - bottomGutter + 5) + ") rotate(90)";
         });
     };
 
