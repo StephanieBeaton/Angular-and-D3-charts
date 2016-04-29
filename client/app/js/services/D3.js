@@ -173,9 +173,6 @@ module.exports = exports = function(app) {
 
       var gBar = this.svg.selectAll("g.bar")
         .data(data);
-
-      // add new bars
-      gBar
         .enter()
         .append("g")
         .attr("class", "bar")
@@ -185,7 +182,6 @@ module.exports = exports = function(app) {
       gBar.exit().remove();
 
       // update
-      // this.svg.selectAll("g.bar").select("rect")
       gBar.select("rect")
         .attr("width", barWidth)
         .attr("height", function(d) {
@@ -195,8 +191,8 @@ module.exports = exports = function(app) {
           }
           return self.height - bottomGutter - yScale(total);
         })
-        .transition()
-        .duration(500)
+        //.transition()
+        //.duration(500)
         .style("fill", function(d, i) { return color(i); })
         .attr("x", function(d, i) { return (i * barWidth) + (i * barPadding); })
         .attr("y", function(d) {
@@ -207,21 +203,13 @@ module.exports = exports = function(app) {
           return yScale(total);
         });
 
-      // delete text nodes if they exist ?
       if (!gBar.select("text").empty()) {
         gBar.select("text").remove();
       }
-      // only create text nodes on the first draw of the chart
-      // if (this.svg.selectAll("g.bar").select("text").empty()) {
-        this.svg.selectAll("g.bar")
-          .append("text")
-          .text(function(d) { return d.Name; });
-      //}
 
-      // update
-      this.svg.selectAll("g.bar").select("text")
-        .transition()
-        .duration(500)
+      this.svg.selectAll("g.bar")
+        .append("text")
+        .text(function(d) { return d.Name; })
         .attr("transform", function(d, i) {
           var total = 0;
           for (var k in d.Totals) {
