@@ -162,17 +162,12 @@ module.exports = exports = function(app) {
     // in Development  Drop Down Data
     var dropDownResource = Resource('./data/dropDownContent.json');
 
-
-
-
     var resources = [];
     resources.push({  name: "salespeople", resource: salespeopleResource, dummyData: salespeopleDummyData, updateInterval: 6000000});
     resources.push({  name: "customer",    resource: customerResource,    dummyData: customerDummyData,    updateInterval: 6000000});
     resources.push({  name: "dropdown",    resource: dropDownResource,    dummyData: dropdownDummyData,    updateInterval: 6000000});
 
     // resources.push({  name: "quote",       resource: quoteResource,       dummyData: quoteDummyData});
-
-
 
     // ===========================================================
     //   startUpdates  -  get data from the server every updateInterval milliseconds
@@ -202,8 +197,6 @@ module.exports = exports = function(app) {
     function stopUpdates(resourceObj) {
       if (typeof $scope[resourceObj.name + "Updates"] !== 'undefined') clearInterval($scope[resourceObj.name + "Updates"]);
     }
-
-
 
     // =======================================================================
     //
@@ -318,8 +311,7 @@ module.exports = exports = function(app) {
       if (!(dropdownvalues.selectedSalesmen    === undefined &&
         dropdownvalues.selectedCustomer    === undefined &&
         dropdownvalues.selectedProductType === undefined &&
-        dropdownvalues.selectedDistributor === undefined  ))
-        {
+        dropdownvalues.selectedDistributor === undefined  )) {
           if ($scope.currentView === 'overview'){
 
             // stop updates
@@ -683,45 +675,40 @@ module.exports = exports = function(app) {
         //   filter data for the  Product Type dropdowns
         // =====================================================================
 
-        if ( $scope.dropdownvalues &&
-          $scope.dropdownvalues.selectedProductType &&
-          $scope.dropdownvalues.selectedProductType.Value ) {
-
-            // =====================================================================
-            //   filter data for the  Product Type dropdowns
-            // =====================================================================
-            var changedData_2 = changedData.map(function(element, index, array){
-
-              var temp = {};
-
-              // example Product Type selected value {"Name":"Exterior","Value":98}
-
-              // match selected Product Type to Customer or Salesmen data
-              // ... using Product Type Name  not  Id
-
-              var Name = $scope.dropdownvalues.selectedProductType.Name;
-
-              if (element.Totals[Name]) {
-                temp[Name] = element.Totals[Name];
-              }
-
-              element.Totals = temp;
-
-              return element;
-
-            });  //  changedData_2 = changedData.map(function(element, index, array)
-
-            changedData = changedData_2;
-          }
+        if ( $scope.dropdownvalues && $scope.dropdownvalues.selectedProductType && $scope.dropdownvalues.selectedProductType.Value ) {
 
           // =====================================================================
-          //   end of     filter data for the  Product Type dropdowns
+          //   filter data for the  Product Type dropdowns
           // =====================================================================
+          var changedData_2 = changedData.map(function(element, index, array){
 
-          return changedData;
+            var temp = {};
 
-        }  //  end of   function filterD3Data(data)
+            // example Product Type selected value {"Name":"Exterior","Value":98}
 
+            // match selected Product Type to Customer or Salesmen data
+            // ... using Product Type Name  not  Id
 
-      }]);
-    };
+            var Name = $scope.dropdownvalues.selectedProductType.Name;
+
+            if (element.Totals[Name]) {
+              temp[Name] = element.Totals[Name];
+            }
+
+            element.Totals = temp;
+
+            return element;
+
+          });  //  changedData_2 = changedData.map(function(element, index, array)
+
+          changedData = changedData_2;
+        }
+
+        // =====================================================================
+        //   end of     filter data for the  Product Type dropdowns
+        // =====================================================================
+
+        return changedData;
+      }  //  end of   function filterD3Data(data)
+  }]);
+};
