@@ -3,94 +3,94 @@
 // =====================================================================
 
 var salespeopleDummyData =
-    [
-      {
-        "Totals": {},
-        "Name": "mail Test",
-        "Id": 5
-      },
-      {
-        "Totals": {
-          "Exterior": 13887.15,
-          "Window": 16777.215,
-          "Interior": 3026.09,
-          "Decking": 6840.5,
-          "Skylight": 3985.43,
-          "Moulding": 1721.83,
-          "Siding": 202.89
-        },
-        "Name": "Test User",
-        "Id": 7
-      },
-      {
-        "Totals": {
-          "Skylight": 157.84,
-          "Window": 6978.52
-        },
-        "Name": "Jason Lindquist",
-        "Id": 94
-      },
-      {
-        "Totals": {},
-        "Name": "Jason Parchomchuk",
-        "Id": 262
-      },
-      {
-        "Totals": {
-          "Interior": 446.32,
-          "Moulding": 83.2,
-          "Window": 202,
-          "Skylight": 207
-        },
-        "Name": "Jason Lindquist",
-        "Id": 300
-      },
-      {
-        "Totals": {
-          "Siding": 3.87
-        },
-        "Name": "Jonny Tester",
-        "Id": 301
-      }
-    ];
+[
+  {
+    "Totals": {},
+    "Name": "mail Test",
+    "Id": 5
+  },
+  {
+    "Totals": {
+      "Exterior": 13887.15,
+      "Window": 16777.215,
+      "Interior": 3026.09,
+      "Decking": 6840.5,
+      "Skylight": 3985.43,
+      "Moulding": 1721.83,
+      "Siding": 202.89
+    },
+    "Name": "Test User",
+    "Id": 7
+  },
+  {
+    "Totals": {
+      "Skylight": 157.84,
+      "Window": 6978.52
+    },
+    "Name": "Jason Lindquist",
+    "Id": 94
+  },
+  {
+    "Totals": {},
+    "Name": "Jason Parchomchuk",
+    "Id": 262
+  },
+  {
+    "Totals": {
+      "Interior": 446.32,
+      "Moulding": 83.2,
+      "Window": 202,
+      "Skylight": 207
+    },
+    "Name": "Jason Lindquist",
+    "Id": 300
+  },
+  {
+    "Totals": {
+      "Siding": 3.87
+    },
+    "Name": "Jonny Tester",
+    "Id": 301
+  }
+];
 
 // ==========================================================================
 
 var customerDummyData = [{ 'label':'Stuff',       'value':40 },
-                         { 'label':'Other Stuff', 'value':50 },
-                         { 'label':'Things',      'value':30 }];
+{ 'label':'Other Stuff', 'value':50 },
+{ 'label':'Things',      'value':30 }];
 
 // ==========================================================================
 
 var dropdownDummyData =
-    {
-    "DropDowns": {
-        "Salesmen": [
-          {
-            "Name": "Test User",
-            "Value": 7
-          }
-        ],
-      "Customers": [
-          {
-            "Name": "Auto Save",
-            "Value": 8
-          }
-        ],
-      "Products": [
-          {
-            "Name": "Doors",
-            "Value": 1
-          }
-        ],
-      "Distributors": [
-          {
-            "Name": "Atrium",
-            "Value": 5
-          }
-       ]
+{
+  "DropDowns": {
+    "Salesmen": [
+      {
+        "Name": "Test User",
+        "Value": 7
       }
-    };
+    ],
+    "Customers": [
+      {
+        "Name": "Auto Save",
+        "Value": 8
+      }
+    ],
+    "Products": [
+      {
+        "Name": "Doors",
+        "Value": 1
+      }
+    ],
+    "Distributors": [
+      {
+        "Name": "Atrium",
+        "Value": 5
+      }
+    ]
+  }
+};
 
 
 // ==========================================================================
@@ -182,22 +182,15 @@ module.exports = exports = function(app) {
     //
     // ===========================================================
     function startUpdates(resourceObj) {
-
       $scope[resourceObj.name + "Updates"] = setInterval(function() {
-
         if (resourceObj.resource === null){
-            $scope[resourceObj.name + "Data"] = resourceObj.dummyData;
-
+          $scope[resourceObj.name + "Data"] = resourceObj.dummyData;
         } else {
-
-            resourceObj.resource.get(function(err, data) {
-
-                $scope[resourceObj.name + "Data"] = data;
-
-            });
-
+          resourceObj.resource.get(function(err, data) {
+            $scope[resourceObj.name + "Data"] = data;
+          });
         }
-       }, resourceObj.updateInterval);
+      }, resourceObj.updateInterval);
     }
 
     // ===========================================================
@@ -222,49 +215,49 @@ module.exports = exports = function(app) {
 
       resources.forEach(function(resourceObj){
 
-         if (resourceObj.resource === null){
+        if (resourceObj.resource === null){
 
-            $scope[resourceObj.name + "Data"] = resourceObj.dummyData;
+          $scope[resourceObj.name + "Data"] = resourceObj.dummyData;
 
-          } else {
+        } else {
 
-             resourceObj.resource.get(function(err, data) {
-                // emit an event up the scope chain with the newly fetched data
-                $rootScope.$emit('dataUpdated', data);
+          resourceObj.resource.get(function(err, data) {
+            // emit an event up the scope chain with the newly fetched data
+            $rootScope.$emit('dataUpdated', data);
 
-                $scope[resourceObj.name + "Data"] = data;
+            $scope[resourceObj.name + "Data"] = data;
 
-                if (resourceObj.name === "dropdown"){
+            if (resourceObj.name === "dropdown"){
 
-                      // remove "s" from the end of all Product Type Names
-                      data.DropDowns.Products = data.DropDowns.Products.map(function(element){
-                        if (element.Name.endsWith('s') ){
-                          element.Name = element.Name.slice(0, -1);
-                        }
-                        return element;
-                      });
-
-                      // append two more Product Types
-                      data.DropDowns.Products.push({
-                        "Name": "Exterior",
-                        "Value": 98
-                      });
-
-                      data.DropDowns.Products.push({
-                        "Name": "Interior",
-                        "Value": 99
-                      });
-
-                      $scope.productTypesDropDown = data.DropDowns.Products;
-                      $scope.distributorsDropDown = data.DropDowns.Distributors;
-                      $scope.customersDropDown    = data.DropDowns.Customers;
-                      $scope.salesmenDropDown     = data.DropDowns.Salesmen;
-
-                }  //  if (resourceObj.name === "dropdown"){
-
+              // remove "s" from the end of all Product Type Names
+              data.DropDowns.Products = data.DropDowns.Products.map(function(element){
+                if (element.Name.endsWith('s') ){
+                  element.Name = element.Name.slice(0, -1);
+                }
+                return element;
               });
 
-          }
+              // append two more Product Types
+              data.DropDowns.Products.push({
+                "Name": "Exterior",
+                "Value": 98
+              });
+
+              data.DropDowns.Products.push({
+                "Name": "Interior",
+                "Value": 99
+              });
+
+              $scope.productTypesDropDown = data.DropDowns.Products;
+              $scope.distributorsDropDown = data.DropDowns.Distributors;
+              $scope.customersDropDown    = data.DropDowns.Customers;
+              $scope.salesmenDropDown     = data.DropDowns.Salesmen;
+
+            }  //  if (resourceObj.name === "dropdown")
+
+          });
+
+        }
 
       });
     }
@@ -276,21 +269,21 @@ module.exports = exports = function(app) {
     //  Deep copy an Object
     //
     // =======================================================================
-     function deepCopyObject(itemObj){
-        var temp = {};
+    function deepCopyObject(itemObj){
+      var temp = {};
 
-        for (var property in itemObj) {
+      for (var property in itemObj) {
 
-            if (itemObj.hasOwnProperty(property)) {
-                if (typeof itemObj[property] === "object"){
-                  temp[property] = deepCopyObject(itemObj[property]);
-                } else {
-                  temp[property] = itemObj[property];
-                }
-            }
+        if (itemObj.hasOwnProperty(property)) {
+          if (typeof itemObj[property] === "object"){
+            temp[property] = deepCopyObject(itemObj[property]);
+          } else {
+            temp[property] = itemObj[property];
+          }
         }
-        return temp;
       }
+      return temp;
+    }
 
     // =======================================================================
     //
@@ -312,275 +305,272 @@ module.exports = exports = function(app) {
     //
     // =======================================================================
     function watchForDropDownChanges(){
-          var temp;
-          var tempData;
-          var dropdownvalues = {};
-          dropdownvalues.selectedSalesmen     = $scope.selectedSalesmen;
-          dropdownvalues.selectedCustomer     = $scope.selectedCustomer;
-          dropdownvalues.selectedProductType  = $scope.selectedProductType;
-          dropdownvalues.selectedDistributor  = $scope.selectedDistributor;
+      var temp;
+      var tempData;
+      var dropdownvalues = {};
+      dropdownvalues.selectedSalesmen     = $scope.selectedSalesmen;
+      dropdownvalues.selectedCustomer     = $scope.selectedCustomer;
+      dropdownvalues.selectedProductType  = $scope.selectedProductType;
+      dropdownvalues.selectedDistributor  = $scope.selectedDistributor;
 
-          $scope.dropdownvalues = dropdownvalues;
+      $scope.dropdownvalues = dropdownvalues;
 
-          if (!(dropdownvalues.selectedSalesmen    === undefined &&
-                dropdownvalues.selectedCustomer    === undefined &&
-                dropdownvalues.selectedProductType === undefined &&
-                dropdownvalues.selectedDistributor === undefined  ))
-          {
-              if ($scope.currentView === 'overview'){
+      if (!(dropdownvalues.selectedSalesmen    === undefined &&
+        dropdownvalues.selectedCustomer    === undefined &&
+        dropdownvalues.selectedProductType === undefined &&
+        dropdownvalues.selectedDistributor === undefined  ))
+        {
+          if ($scope.currentView === 'overview'){
 
-                 // stop updates
+            // stop updates
 
-                 // temporarily commenting out
-                 resources.forEach(function(resourceObj){
-                   if (resourceObj.name === "customer"){
-                     if ($scope[resourceObj.name + "Updates"] !== null){
-                       stopUpdates(resourceObj);
-                     }
-                   }
-                 });
-
-                // copy $scope.customerData to another array
-                // ... because, somehow, function filterD3Data()
-                // ...... is changing $scope.customerData
-
-                tempData = deepCopyArray($scope.customerData);
-
-                temp = filterD3Data(tempData, "customer");
-
-                if ($scope.d3Object) {
-                  $scope.d3Object.buildChart(temp);
-                } else {
-                  $scope.d3Object = D3('pie', 500, 500, temp);
+            resources.forEach(function(resourceObj){
+              if (resourceObj.name === "customer"){
+                if ($scope[resourceObj.name + "Updates"] !== null){
+                  stopUpdates(resourceObj);
                 }
-
-                 // start updates
-
-                 // temporarily commenting out
-                 resources.forEach(function(resourceObj){
-                   if (resourceObj.name === "customer"){
-                     startUpdates(resourceObj);
-                   }
-                 });
-
-              } else if ($scope.currentView === 'customer'){
-
-                 // stop updates
-
-                 // temporarily commenting out
-                 resources.forEach(function(resourceObj){
-                   if (resourceObj.name === "customer"){
-                     if ($scope[resourceObj.name + "Updates"] !== null){
-                       stopUpdates(resourceObj);
-                     }
-                   }
-                 });
-
-                // copy $scope.customerData to another array
-                // ... because, somehow, function filterD3Data()
-                // ...... is changing $scope.customerData
-
-                tempData = deepCopyArray($scope.customerData);
-
-                temp = filterD3Data(tempData, "customer");
-
-                if ($scope.d3Object) {
-                  $scope.d3Object.buildChart(temp);
-                } else {
-                  $scope.d3Object = D3('bar', 800, 500, temp);
-                }
-
-                 // start updates
-
-                 // temporarily commenting out
-                 // resources.forEach(function(resourceObj){
-                 //   if (resourceObj.name === "customer"){
-                 //     startUpdates(resourceObj);
-                 //   }
-                 // });
-
-              } else {
-
-
-                 // stop updates
-
-                 // temporarily commenting out
-                 // resources.forEach(function(resourceObj){
-                 //   if (resourceObj.name === "salespeople"){
-                 //     if ($scope[resourceObj.name + "Updates"] !== null){
-                 //       stopUpdates(resourceObj);
-                 //     }
-                 //   }
-                 // });
-
-                // deep copy $scope.customerData to another array
-                // ... because, somehow, function filterD3Data()
-                // ...... is changing $scope.salespeopleData
-
-                tempData = deepCopyArray($scope.salespeopleData);
-
-                temp = filterD3Data(tempData, "salespeople");
-
-                if ($scope.d3Object) {
-                  $scope.d3Object.buildChart(temp);
-                } else {
-                  $scope.d3Object = D3('stacked-chart', 900, 500, temp);
-                }
-
-                 // start updates
-
-                 // temporarily commenting out
-                 // resources.forEach(function(resourceObj){
-                 //   if (resourceObj.name === "salespeople"){
-                 //     startUpdates(resourceObj);
-                 //   }
-                 // });
-
               }
+            });
+
+            // copy $scope.customerData to another array
+            // ... because, somehow, function filterD3Data()
+            // ...... is changing $scope.customerData
+
+            tempData = deepCopyArray($scope.customerData);
+
+            temp = filterD3Data(tempData, "customer");
+
+            if ($scope.d3Object) {
+              $scope.d3Object.buildChart(temp);
+            } else {
+              $scope.d3Object = D3('pie', 500, 500, temp);
+            }
+
+            // start updates
+
+            resources.forEach(function(resourceObj){
+              if (resourceObj.name === "customer"){
+                startUpdates(resourceObj);
+              }
+            });
+
+          } else if ($scope.currentView === 'customer'){
+
+            // stop updates
+
+            resources.forEach(function(resourceObj){
+              if (resourceObj.name === "customer"){
+                if ($scope[resourceObj.name + "Updates"] !== null){
+                  stopUpdates(resourceObj);
+                }
+              }
+            });
+
+            // copy $scope.customerData to another array
+            // ... because, somehow, function filterD3Data()
+            // ...... is changing $scope.customerData
+
+            tempData = deepCopyArray($scope.customerData);
+
+            temp = filterD3Data(tempData, "customer");
+
+            if ($scope.d3Object) {
+              $scope.d3Object.buildChart(temp);
+            } else {
+              $scope.d3Object = D3('bar', 800, 500, temp);
+            }
+
+            // start updates
+
+            // temporarily commenting out
+            // resources.forEach(function(resourceObj){
+            //   if (resourceObj.name === "customer"){
+            //     startUpdates(resourceObj);
+            //   }
+            // });
+
+          } else {
+
+
+            // stop updates
+
+            // temporarily commenting out
+            // resources.forEach(function(resourceObj){
+            //   if (resourceObj.name === "salespeople"){
+            //     if ($scope[resourceObj.name + "Updates"] !== null){
+            //       stopUpdates(resourceObj);
+            //     }
+            //   }
+            // });
+
+            // deep copy $scope.customerData to another array
+            // ... because, somehow, function filterD3Data()
+            // ...... is changing $scope.salespeopleData
+
+            tempData = deepCopyArray($scope.salespeopleData);
+
+            temp = filterD3Data(tempData, "salespeople");
+
+            if ($scope.d3Object) {
+              $scope.d3Object.buildChart(temp);
+            } else {
+              $scope.d3Object = D3('stacked-chart', 900, 500, temp);
+            }
+
+            // start updates
+
+            // temporarily commenting out
+            // resources.forEach(function(resourceObj){
+            //   if (resourceObj.name === "salespeople"){
+            //     startUpdates(resourceObj);
+            //   }
+            // });
+
           }
+        }
       }
 
-    // =======================================================================
+      // =======================================================================
 
-    // Build an array of unique categories from the Totals object.
-    // This is useful for creating the table views.
-    var getUniqueCategories = function(data) {
-      var uniqueCategories = [],
-          seenCategories = {};
+      // Build an array of unique categories from the Totals object.
+      // This is useful for creating the table views.
+      var getUniqueCategories = function(data) {
+        var uniqueCategories = [],
+        seenCategories = {};
 
-      data.forEach(function(item) {
-        Object.keys(item.Totals).forEach(function(key) {
-          if (!seenCategories.hasOwnProperty(key)) {
-            uniqueCategories.push(key);
-            seenCategories[key] = true;
-          }
+        data.forEach(function(item) {
+          Object.keys(item.Totals).forEach(function(key) {
+            if (!seenCategories.hasOwnProperty(key)) {
+              uniqueCategories.push(key);
+              seenCategories[key] = true;
+            }
+          });
         });
+
+        return uniqueCategories;
+      };
+
+
+      //  THIS EVENT  'dataUpdated' NO LONGER OCCURS
+      //  SO  $scope.uniqueCategories  is not set
+      //  SO  $scope.currentData  is not set
+
+      // D3 service instances will emit a 'dataUpdated' event when they fetch new data.
+      // We'll store that data in scope here, and that way it will be available to
+      // directives and templates as well.
+
+      $rootScope.$on('dataUpdated', function(evt, data) {
+        $scope.currentData = data;
+        $scope.uniqueCategories = getUniqueCategories(data);
       });
 
-      return uniqueCategories;
-    };
+      // =======================================================================
+
+      // Create the graph(s) for the view/page.
+
+      $scope.d3Object = null;
+      $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams, options) {
+        if (toState.name === 'overview') {
+          $scope.currentView = 'overview';
+        } else if (toState.name === 'customer') {
+          $scope.currentView = 'customer';
+        } else if (toState.name === 'salespeople') {
+          $scope.currentView = 'salespeople';
+        }
+      });
+      $scope.$on('$viewContentLoaded', function(){
+
+        var temp = "";
+        var tempData;
+        var filteredTempData;
+
+        // stop updates
+
+        // temporarily commented out for debugging
+        resources.forEach(function(resourceObj){
+          if (resourceObj.name !== "dropdown"){
+            if ($scope[resourceObj.name + "Updates"] !== null){
+              stopUpdates(resourceObj);
+            }
+          }
+        });
+
+        if ($scope.currentView === 'overview') {
+
+          // deep copy $scope.customerData to another array
+          // ... because, somehow, function filterD3Data()
+          // ...... is changing $scope.customerData
+
+          tempData = deepCopyArray($scope.customerData);
+
+          filteredTempData = filterD3Data(tempData, "customer");
+
+          $scope.d3Object = D3('pie', 500, 500, filteredTempData);
+
+          $scope.$watch('selectedSalesmen', watchForDropDownChanges);
+          $scope.$watch('selectedCustomer', watchForDropDownChanges);
+          $scope.$watch('selectedProductType', watchForDropDownChanges);
+          $scope.$watch('selectedDistributor', watchForDropDownChanges);
+
+          temp = 'customer';
+
+        } else if ($scope.currentView === 'customer') {
+
+          // deep copy $scope.customerData to another array
+          // ... because, somehow, function filterD3Data()
+          // ...... is changing $scope.customerData
+
+          tempData = deepCopyArray($scope.customerData);
+
+          filteredTempData = filterD3Data(tempData, "customer");
+
+          $scope.d3Object = D3('bar', 800, 500, filteredTempData);
+
+          $scope.$watch('selectedSalesmen', watchForDropDownChanges);
+          $scope.$watch('selectedCustomer', watchForDropDownChanges);
+          $scope.$watch('selectedProductType', watchForDropDownChanges);
+          $scope.$watch('selectedDistributor', watchForDropDownChanges);
+
+          temp = 'customer';
+
+        } else if ($scope.currentView === 'salespeople') {
+
+          // deep copy $scope.customerData to another array
+          // ... because, somehow, function filterD3Data()
+          // ...... is changing $scope.salespeopleData
+
+          tempData = deepCopyArray($scope.salespeopleData);
+
+          filteredTempData = filterD3Data(tempData, "salespeople");
+
+          $scope.d3Object = D3('stacked-chart', 900, 500, filteredTempData);
+
+          $scope.$watch('selectedSalesmen', watchForDropDownChanges);
+          $scope.$watch('selectedCustomer', watchForDropDownChanges);
+          $scope.$watch('selectedProductType', watchForDropDownChanges);
+          $scope.$watch('selectedDistributor', watchForDropDownChanges);
+
+          temp = 'salespeople';
+        }
+
+        // start updates
+        // temporarily commented out for debuggin
+        resources.forEach(function(resourceObj){
+          if (resourceObj.name === temp){
+            startUpdates(resourceObj);
+          }
+        });
 
 
-    //  THIS EVENT  'dataUpdated' NO LONGER OCCURS
-    //  SO  $scope.uniqueCategories  is not set
-    //  SO  $scope.currentData  is not set
-
-    // D3 service instances will emit a 'dataUpdated' event when they fetch new data.
-    // We'll store that data in scope here, and that way it will be available to
-    // directives and templates as well.
-
-    $rootScope.$on('dataUpdated', function(evt, data) {
-      $scope.currentData = data;
-      $scope.uniqueCategories = getUniqueCategories(data);
-    });
-
-    // =======================================================================
-
-    // Create the graph(s) for the view/page.
-
-    $scope.d3Object = null;
-    $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams, options) {
-     if (toState.name === 'overview') {
-       $scope.currentView = 'overview';
-     } else if (toState.name === 'customer') {
-       $scope.currentView = 'customer';
-     } else if (toState.name === 'salespeople') {
-       $scope.currentView = 'salespeople';
-     }
-   });
-   $scope.$on('$viewContentLoaded', function(){
-
-     var temp = "";
-     var tempData;
-     var filteredTempData;
-
-     // stop updates
-
-     // temporarily commented out for debugging
-     resources.forEach(function(resourceObj){
-       if (resourceObj.name !== "dropdown"){
-         if ($scope[resourceObj.name + "Updates"] !== null){
-           stopUpdates(resourceObj);
-         }
-       }
-     });
-
-     if ($scope.currentView === 'overview') {
-
-       // deep copy $scope.customerData to another array
-       // ... because, somehow, function filterD3Data()
-       // ...... is changing $scope.customerData
-
-       tempData = deepCopyArray($scope.customerData);
-
-       filteredTempData = filterD3Data(tempData, "customer");
-
-       $scope.d3Object = D3('pie', 500, 500, filteredTempData);
-
-       $scope.$watch('selectedSalesmen', watchForDropDownChanges);
-       $scope.$watch('selectedCustomer', watchForDropDownChanges);
-       $scope.$watch('selectedProductType', watchForDropDownChanges);
-       $scope.$watch('selectedDistributor', watchForDropDownChanges);
-
-       temp = 'customer';
-
-     } else if ($scope.currentView === 'customer') {
-
-       // deep copy $scope.customerData to another array
-       // ... because, somehow, function filterD3Data()
-       // ...... is changing $scope.customerData
-
-       tempData = deepCopyArray($scope.customerData);
-
-       filteredTempData = filterD3Data(tempData, "customer");
-
-       $scope.d3Object = D3('bar', 800, 500, filteredTempData);
-
-       $scope.$watch('selectedSalesmen', watchForDropDownChanges);
-       $scope.$watch('selectedCustomer', watchForDropDownChanges);
-       $scope.$watch('selectedProductType', watchForDropDownChanges);
-       $scope.$watch('selectedDistributor', watchForDropDownChanges);
-
-       temp = 'customer';
-
-     } else if ($scope.currentView === 'salespeople') {
-
-       // deep copy $scope.customerData to another array
-       // ... because, somehow, function filterD3Data()
-       // ...... is changing $scope.salespeopleData
-
-       tempData = deepCopyArray($scope.salespeopleData);
-
-       filteredTempData = filterD3Data(tempData, "salespeople");
-
-       $scope.d3Object = D3('stacked-chart', 900, 500, filteredTempData);
-
-       $scope.$watch('selectedSalesmen', watchForDropDownChanges);
-       $scope.$watch('selectedCustomer', watchForDropDownChanges);
-       $scope.$watch('selectedProductType', watchForDropDownChanges);
-       $scope.$watch('selectedDistributor', watchForDropDownChanges);
-
-       temp = 'salespeople';
-      }
-
-     // start updates
-     // temporarily commented out for debuggin
-     resources.forEach(function(resourceObj){
-       if (resourceObj.name === temp){
-          startUpdates(resourceObj);
-       }
-     });
+      });
 
 
-   });
+      // ===========================================================
+      //   filterD3Data - filter the data according the the drop down values
+      //
+      // ===========================================================
 
-
-    // ===========================================================
-    //   filterD3Data - filter the data according the the drop down values
-    //
-    // ===========================================================
-
-    function filterD3Data(data, dataType) {
+      function filterD3Data(data, dataType) {
 
         var changedData = [];
 
@@ -604,110 +594,103 @@ module.exports = exports = function(app) {
         //
         // =====================================================================
 
-        if (!!(($scope.dropdownvalues.selectedCustomer && $scope.dropdownvalues.selectedCustomer.Value) ||
-                ($scope.dropdownvalues.selectedSalesmen && $scope.dropdownvalues.selectedSalesmen.Value) ||
-                ($scope.dropdownvalues.selectedDistributor && $scope.dropdownvalues.selectedDistributor.Value))) {
+        if (($scope.dropdownvalues.selectedCustomer && $scope.dropdownvalues.selectedCustomer.Value) ||
+        ($scope.dropdownvalues.selectedSalesmen && $scope.dropdownvalues.selectedSalesmen.Value) ||
+        ($scope.dropdownvalues.selectedDistributor && $scope.dropdownvalues.selectedDistributor.Value)) {
 
 
-            // =====================================================================
-            //   filter data for the  Customer, Salesmen and Distributor dropdowns
-            // =====================================================================
-            changedData = copyOfData.filter(function(element, index, array){
+          // =====================================================================
+          //   filter data for the  Customer, Salesmen and Distributor dropdowns
+          // =====================================================================
+          changedData = copyOfData.filter(function(element, index, array){
 
-                // Is this Quotes, Salespersons, or Customers data ?
+            // Is this Quotes, Salespersons, or Customers data ?
 
-                // If its Quotes then       filter by Product Type and/or Quote?
-                // If its Salespersons then filter by Product Type and/or Salesperson
-                // If its Customers then    filter by Product Type and/or Customers
+            // If its Quotes then       filter by Product Type and/or Quote?
+            // If its Salespersons then filter by Product Type and/or Salesperson
+            // If its Customers then    filter by Product Type and/or Customers
 
-                // [
-                //   {
-                //     "Totals": {
-                //       "Interior":2284.81,   <—   DropDowns.Products.Name   filters these
-                //       "Exterior":33699.36,
-                //       "Window":10477.000,
-                //       "Moulding":19.24,
-                //       "Siding":273.61,
-                //       "Decking":4629.42,
-                //       "Skylight":6230.33
-                //     },
-                //     "Name":"Auto Save",    <—   DropDowns.Customer.Name   filters this
-                //     "Id":8
-                //   },
-                //   {  }
-                // ]
+            // [
+            //   {
+            //     "Totals": {
+            //       "Interior":2284.81,   <—   DropDowns.Products.Name   filters these
+            //       "Exterior":33699.36,
+            //       "Window":10477.000,
+            //       "Moulding":19.24,
+            //       "Siding":273.61,
+            //       "Decking":4629.42,
+            //       "Skylight":6230.33
+            //     },
+            //     "Name":"Auto Save",    <—   DropDowns.Customer.Name   filters this
+            //     "Id":8
+            //   },
+            //   {  }
+            // ]
 
 
-                if (dataType === "customer"){
+            if (dataType === "customer"){
 
-                  if (!$scope.dropdownvalues.selectedCustomer){
-                    return true;
-                  }
+              if (!$scope.dropdownvalues.selectedCustomer){
+                return true;
+              }
 
-                  if ($scope.dropdownvalues.selectedCustomer["Name"] === "All Customers"){
-                    return true;
-                  }
+              if ($scope.dropdownvalues.selectedCustomer["Name"] === "All Customers"){
+                return true;
+              }
 
-                  if ($scope.dropdownvalues.selectedCustomer && $scope.dropdownvalues.selectedCustomer.Value){
-                    if ($scope.dropdownvalues.selectedCustomer["Value"] === element["Id"]){
-                      return true;
-                    }
-                  }
-
-                } else if (dataType === "salespeople"){
-
-                   if (!$scope.dropdownvalues.selectedSalesmen){
-                      return true;
-                    }
-
-                   if ($scope.dropdownvalues.selectedSalesmen["Name"] === "All Salesmen"){
-                     return true;
-                   }
-
-                  if ($scope.dropdownvalues.selectedSalesmen && $scope.dropdownvalues.selectedSalesmen.Value){
-
-                    if ($scope.dropdownvalues.selectedSalesmen["Value"] === element["Id"]){
-                      return true;
-                    }
-
-                  }
-
-                } else if (dataType === "quote"){
-
+              if ($scope.dropdownvalues.selectedCustomer && $scope.dropdownvalues.selectedCustomer.Value){
+                if ($scope.dropdownvalues.selectedCustomer["Value"] === element["Id"]){
                   return true;
                 }
+              }
+            } else if (dataType === "salespeople"){
 
-                return false;
+              if (!$scope.dropdownvalues.selectedSalesmen){
+                return true;
+              }
 
-            });   // end of   data.filter(function(element, index, array){
+              if ($scope.dropdownvalues.selectedSalesmen["Name"] === "All Salesmen"){
+                return true;
+              }
 
+              if ($scope.dropdownvalues.selectedSalesmen && $scope.dropdownvalues.selectedSalesmen.Value){
+
+                if ($scope.dropdownvalues.selectedSalesmen["Value"] === element["Id"]){
+                  return true;
+                }
+              }
+            } else if (dataType === "quote"){
+
+              return true;
+            }
+            return false;
+          });   // end of   data.filter(function(element, index, array)
         } else {
 
-           // no filtering of original data
-           changedData = copyOfData;
+          // no filtering of original data
+          changedData = copyOfData;
 
-        }  // end of if( ) {
+        }  // end of if( )
 
-       // =====================================================================
-       //
-       //   end of filter data for the  Customer, Salesmen and Distributor dropdowns
-       //
-       // =====================================================================
+        // =====================================================================
+        //
+        //   end of filter data for the  Customer, Salesmen and Distributor dropdowns
+        //
+        // =====================================================================
 
 
-       // =====================================================================
-       //   filter data for the  Product Type dropdowns
-       // =====================================================================
+        // =====================================================================
+        //   filter data for the  Product Type dropdowns
+        // =====================================================================
 
         if ( $scope.dropdownvalues &&
-             $scope.dropdownvalues.selectedProductType &&
-             $scope.dropdownvalues.selectedProductType.Value )
-        {
+          $scope.dropdownvalues.selectedProductType &&
+          $scope.dropdownvalues.selectedProductType.Value ) {
 
-           // =====================================================================
-           //   filter data for the  Product Type dropdowns
-           // =====================================================================
-           var changedData_2 = changedData.map(function(element, index, array){
+            // =====================================================================
+            //   filter data for the  Product Type dropdowns
+            // =====================================================================
+            var changedData_2 = changedData.map(function(element, index, array){
 
               var temp = {};
 
@@ -726,19 +709,19 @@ module.exports = exports = function(app) {
 
               return element;
 
-            });  //  changedData_2 = changedData.map(function(element, index, array){
+            });  //  changedData_2 = changedData.map(function(element, index, array)
 
             changedData = changedData_2;
-        }
+          }
 
-       // =====================================================================
-       //   end of     filter data for the  Product Type dropdowns
-       // =====================================================================
+          // =====================================================================
+          //   end of     filter data for the  Product Type dropdowns
+          // =====================================================================
 
-        return changedData;
+          return changedData;
 
-    }  //  end of   function filterD3Data(data) {
+        }  //  end of   function filterD3Data(data)
 
 
-  }]);
-};
+      }]);
+    };
