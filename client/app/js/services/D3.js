@@ -173,6 +173,8 @@ module.exports = exports = function(app) {
 
       var gBar = this.svg.selectAll("g.bar")
       .data(data);
+
+      gBar
       .enter()
       .append("g")
       .attr("class", "bar")
@@ -191,8 +193,8 @@ module.exports = exports = function(app) {
         }
         return self.height - bottomGutter - yScale(total);
       })
-      //.transition()
-      //.duration(500)
+      .transition()
+      .duration(500)
       .style("fill", function(d, i) { return color(i); })
       .attr("x", function(d, i) { return (i * barWidth) + (i * barPadding); })
       .attr("y", function(d) {
