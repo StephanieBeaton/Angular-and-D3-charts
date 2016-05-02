@@ -1,100 +1,5 @@
 'use strict';
 
-// =====================================================================
-
-var salespeopleDummyData =
-[
-  {
-    "Totals": {},
-    "Name": "mail Test",
-    "Id": 5
-  },
-  {
-    "Totals": {
-      "Exterior": 13887.15,
-      "Window": 16777.215,
-      "Interior": 3026.09,
-      "Decking": 6840.5,
-      "Skylight": 3985.43,
-      "Moulding": 1721.83,
-      "Siding": 202.89
-    },
-    "Name": "Test User",
-    "Id": 7
-  },
-  {
-    "Totals": {
-      "Skylight": 157.84,
-      "Window": 6978.52
-    },
-    "Name": "Jason Lindquist",
-    "Id": 94
-  },
-  {
-    "Totals": {},
-    "Name": "Jason Parchomchuk",
-    "Id": 262
-  },
-  {
-    "Totals": {
-      "Interior": 446.32,
-      "Moulding": 83.2,
-      "Window": 202,
-      "Skylight": 207
-    },
-    "Name": "Jason Lindquist",
-    "Id": 300
-  },
-  {
-    "Totals": {
-      "Siding": 3.87
-    },
-    "Name": "Jonny Tester",
-    "Id": 301
-  }
-];
-
-// ==========================================================================
-
-var customerDummyData = [{ 'label':'Stuff',       'value':40 },
-{ 'label':'Other Stuff', 'value':50 },
-{ 'label':'Things',      'value':30 }];
-
-// ==========================================================================
-
-var dropdownDummyData =
-{
-  "DropDowns": {
-    "Salesmen": [
-      {
-        "Name": "Test User",
-        "Value": 7
-      }
-    ],
-    "Customers": [
-      {
-        "Name": "Auto Save",
-        "Value": 8
-      }
-    ],
-    "Products": [
-      {
-        "Name": "Doors",
-        "Value": 1
-      }
-    ],
-    "Distributors": [
-      {
-        "Name": "Atrium",
-        "Value": 5
-      }
-    ]
-  }
-};
-
-
-// ==========================================================================
-
 module.exports = exports = function(app) {
 
   app.controller('appController', ['$rootScope', '$scope', '$http', 'Resource', 'D3', function($rootScope, $scope, $http, Resource, D3) {
@@ -152,22 +57,13 @@ module.exports = exports = function(app) {
     var salespeopleResource = Resource('./data/ordersBySalesperson.json');
     var customerResource    = Resource('./data/ordersByCustomer.json');
     var quoteResource       = Resource('./data/ordersByQuote.json');
-
-    // =======================================================================
-
-    // in Production  Drop Down Data
-
-    //  http://fasterbids.com/DataAccess/GetPageDropDowns?USERkey=EP65g4K-8Fg67
-
-    // in Development  Drop Down Data
-    var dropDownResource = Resource('./data/dropDownContent.json');
+    var dropDownResource    = Resource('./data/dropDownContent.json');
 
     var resources = [];
-    resources.push({  name: "salespeople", resource: salespeopleResource, dummyData: salespeopleDummyData, updateInterval: 6000000});
-    resources.push({  name: "customer",    resource: customerResource,    dummyData: customerDummyData,    updateInterval: 6000000});
-    resources.push({  name: "dropdown",    resource: dropDownResource,    dummyData: dropdownDummyData,    updateInterval: 6000000});
-
-    // resources.push({  name: "quote",       resource: quoteResource,       dummyData: quoteDummyData});
+    resources.push({  name: "salespeople", resource: salespeopleResource, updateInterval: 6000000});
+    resources.push({  name: "customer",    resource: customerResource,    updateInterval: 6000000});
+    resources.push({  name: "dropdown",    resource: dropDownResource,    updateInterval: 6000000});
+    resources.push({  name: "quote",       resource: quoteResource,       updateInterval: 6000000});
 
     // ===========================================================
     //   startUpdates  -  get data from the server every updateInterval milliseconds
@@ -178,13 +74,9 @@ module.exports = exports = function(app) {
     // ===========================================================
     function startUpdates(resourceObj) {
       $scope[resourceObj.name + "Updates"] = setInterval(function() {
-        if (resourceObj.resource === null){
-          $scope[resourceObj.name + "Data"] = resourceObj.dummyData;
-        } else {
-          resourceObj.resource.get(function(err, data) {
-            $scope[resourceObj.name + "Data"] = data;
-          });
-        }
+        resourceObj.resource.get(function(err, data) {
+          $scope[resourceObj.name + "Data"] = data;
+        });
       }, resourceObj.updateInterval);
     }
 
@@ -205,53 +97,22 @@ module.exports = exports = function(app) {
     //
     // =======================================================================
     function getDataFromServer(){
-
       resources.forEach(function(resourceObj){
-
-        if (resourceObj.resource === null){
-
-          $scope[resourceObj.name + "Data"] = resourceObj.dummyData;
-
-        } else {
-
-          resourceObj.resource.get(function(err, data) {
-            // emit an event up the scope chain with the newly fetched data
-            $rootScope.$emit('dataUpdated', data);
-
-            $scope[resourceObj.name + "Data"] = data;
-
-            if (resourceObj.name === "dropdown"){
-
-              // remove "s" from the end of all Product Type Names
-              data.DropDowns.Products = data.DropDowns.Products.map(function(element){
-                if (element.Name.endsWith('s') ){
-                  element.Name = element.Name.slice(0, -1);
-                }
-                return element;
-              });
-
-              // append two more Product Types
-              data.DropDowns.Products.push({
-                "Name": "Exterior",
-                "Value": 98
-              });
-
-              data.DropDowns.Products.push({
-                "Name": "Interior",
-                "Value": 99
-              });
-
-              $scope.productTypesDropDown = data.DropDowns.Products;
-              $scope.distributorsDropDown = data.DropDowns.Distributors;
-              $scope.customersDropDown    = data.DropDowns.Customers;
-              $scope.salesmenDropDown     = data.DropDowns.Salesmen;
-
-            }  //  if (resourceObj.name === "dropdown")
-
-          });
-
-        }
-
+        resourceObj.resource.get(function(err, data) {
+          // emit an event up the scope chain with the newly fetched data
+          $rootScope.$emit('dataUpdated', data);
+          $scope[resourceObj.name + "Data"] = data;
+          if (resourceObj.name === "dropdown"){
+            // remove "s" from the end of all Product Type Names
+            data.DropDowns.Products = data.DropDowns.Products.map(function(element){
+              return element;
+            });
+            $scope.productTypesDropDown = data.DropDowns.Products;
+            $scope.distributorsDropDown = data.DropDowns.Distributors;
+            $scope.customersDropDown    = data.DropDowns.Customers;
+            $scope.salesmenDropDown     = data.DropDowns.Salesmen;
+          }  //  if (resourceObj.name === "dropdown")
+        });
       });
     }
 
@@ -264,9 +125,7 @@ module.exports = exports = function(app) {
     // =======================================================================
     function deepCopyObject(itemObj){
       var temp = {};
-
       for (var property in itemObj) {
-
         if (itemObj.hasOwnProperty(property)) {
           if (typeof itemObj[property] === "object"){
             temp[property] = deepCopyObject(itemObj[property]);
@@ -284,11 +143,9 @@ module.exports = exports = function(app) {
     //
     // =======================================================================
     function deepCopyArray(myArray){
-
       var tempArray = myArray.map(function(itemObj){
         return deepCopyObject(itemObj);
       });
-
       return tempArray;
     }
 
