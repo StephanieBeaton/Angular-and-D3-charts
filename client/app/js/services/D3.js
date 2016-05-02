@@ -69,6 +69,10 @@ module.exports = exports = function(app) {
         change(data, this);
 
       } else {
+        var tip = d3.tip()
+        .attr('class', 'd3-tip')
+        .html(function(d) {return d.Name})
+
         svg = d3.select('#graph')
         .append('svg:svg')
         .data(data)
@@ -76,13 +80,12 @@ module.exports = exports = function(app) {
         .attr('height', this.height)
         .append('svg:g')
         .attr('class', 'g-child-of-svg')
-        .attr('transform', 'translate(' + this.radius + ',' + this.radius + ')');
+        .attr('transform', 'translate(' + this.radius + ',' + this.radius + ')')
 
         path = svg.selectAll("path")
         .data(pie(data))
         .enter()
         .append("path");
-
 
         path.transition()
         .duration(500)
@@ -94,16 +97,12 @@ module.exports = exports = function(app) {
           this._current = d;
         }); // store the initial angles
 
-
         this.path = path;
       }
-
 
       function change(data, d3Object) {
         d3Object.path.data(pie(data));
         d3Object.path.transition().duration(750).attrTween("d", arcTween); // redraw the arcs
-        //d3Object.path.transition().duration(750).attrTween("d", translateFn(d3Object)); // redraw the arcs
-
       }
 
       // Store the displayed angles in _current.
@@ -173,6 +172,8 @@ module.exports = exports = function(app) {
 
       var gBar = this.svg.selectAll("g.bar")
       .data(data);
+
+      gBar
       .enter()
       .append("g")
       .attr("class", "bar")
@@ -189,10 +190,10 @@ module.exports = exports = function(app) {
         for (var k in d.Totals) {
           total += d.Totals[k];
         }
-        return self.height - bottomGutter - yScale(total);
+        return total >= 0 ? self.height - bottomGutter - yScale(total) : 0;
       })
-      //.transition()
-      //.duration(500)
+      .transition()
+      .duration(500)
       .style("fill", function(d, i) { return color(i); })
       .attr("x", function(d, i) { return (i * barWidth) + (i * barPadding); })
       .attr("y", function(d) {
