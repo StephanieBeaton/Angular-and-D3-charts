@@ -64,7 +64,7 @@ module.exports = exports = function(app) {
       var svg;
 
       if (!d3.select('.g-child-of-svg').empty()){
-        svg = d3.select('.g-child-of-svg');
+        svg = d3.select('.g-child d-of-svg');
 
         change(data, this);
 
