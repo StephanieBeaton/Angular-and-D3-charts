@@ -299,7 +299,7 @@ module.exports = exports = function(app) {
 
       //   There are 7 product type items,  so there must be 7 matching colors only
       //
-      var colorArray = ["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"];
+      var colorArray = ["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00", "#4af872"];
       var color = d3.scale.ordinal()
       .range(colorArray);
 

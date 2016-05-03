@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 module.exports = exports = function(app) {
 
@@ -18,11 +18,11 @@ module.exports = exports = function(app) {
     $scope.quoteResource = Resource('http://fasterbids.com/DataAccess/getordersbyquote?USERkey=' + userKey)
     $scope.dropDownResource = Resource('http://fasterbids.com/DataAccess/GetPageDropDowns?USERkey=' + userKey)
 
-    var resources = {};
+    var resources = {}
 
     function startUpdates(resourceObj) {
       $scope[resourceObj.name + "Updates"] = setInterval(function() {
-        resourceObj.resource.get(function(err, data) {
+        resourceObj.get(function(err, data) {
           $scope[resourceObj.name + "Data"] = data
         })
       }, resourceObj.updateInterval)
@@ -46,7 +46,7 @@ module.exports = exports = function(app) {
         function(err, res) {
           if(err) errors.push(err)
           if(res) $scope.quoteData = res
-          $rootScope.$emit('dataUpdated', res);
+          $rootScope.$emit('dataUpdated', res)
           loaded.quote = true
         }
       )
@@ -82,7 +82,6 @@ module.exports = exports = function(app) {
         if (!(loaded.quote && loaded.sales && loaded.custo && loaded.drops)) {
           setTimeout(wait, 500)
         } else {
-          $scope.$emit('ajaxContentLoaded')
           resources.salespeople = {
             name: "salespeople",
             resource: $scope.salespeopleResource,
@@ -108,6 +107,8 @@ module.exports = exports = function(app) {
           $scope.distributorsDropDown = $scope.dropDownData.DropDowns.Distributors
           $scope.customersDropDown    = $scope.dropDownData.DropDowns.Customers
           $scope.salesmenDropDown     = $scope.dropDownData.DropDowns.Salesmen
+
+          $scope.$emit('$viewContentLoaded')
         }
       }
       wait()
@@ -151,7 +152,7 @@ module.exports = exports = function(app) {
           dropdownvalues.selectedProductType  === undefined &&
           dropdownvalues.selectedDistributor  === undefined )) {
         if ($scope.currentView === 'overview') {
-          startUpdates($scope.customerResource)
+          startUpdates(resources.customer)
 
           if ($scope.customerUpdates !== null) {
             stopUpdates($scope.customerUpdates)
@@ -163,14 +164,14 @@ module.exports = exports = function(app) {
           if ($scope.d3Object) {
             $scope.d3Object.buildChart(temp)
           } else {
-            $scope.d3Object = D3('pie', 500, 500, temp);
+            $scope.d3Object = D3('pie', 500, 500, temp)
           }
 
-        } else if ($scope.currentView === 'customer'){
-          startUpdates($scope.customerResource)
+        } else if ($scope.currentView === 'customer') {
+          startUpdates(resources.customer)
 
-          if ($scope.customerUpdates !== null){
-            stopUpdates($scope.customerResource)
+          if ($scope.customerUpdates !== null) {
+            stopUpdates($scope.customerUpdates)
           }
 
           tempData = deepCopyArray($scope.customerData)
@@ -182,7 +183,8 @@ module.exports = exports = function(app) {
             $scope.d3Object = D3('bar', 800, 500, temp)
           }
         } else {
-          startUpdates($scope.salespeopleResource)
+          startUpdates(resources.salespeople)
+
 
           tempData = deepCopyArray($scope.salespeopleData)
           temp = filterD3Data(tempData, "salespeople")
@@ -194,7 +196,7 @@ module.exports = exports = function(app) {
           }
 
           if ($scope.salespeopleUpdates !== null){
-            stopUpdates($scope.salespeopleResource)
+            stopUpdates($scope.salespeopleUpdates)
           }
         }
       }
@@ -204,14 +206,16 @@ module.exports = exports = function(app) {
       var uniqueCategories = [],
           seenCategories = {}
 
-      data.forEach(function(item) {
-        Object.keys(item.Totals).forEach(function(key) {
-          if (!seenCategories.hasOwnProperty(key)) {
-            uniqueCategories.push(key)
-            seenCategories[key] = true
-          }
+      if(Array.isArray(data)) {
+        data.forEach(function(item) {
+          Object.keys(item.Totals).forEach(function(key) {
+            if (!seenCategories.hasOwnProperty(key)) {
+              uniqueCategories.push(key)
+              seenCategories[key] = true
+            }
+          })
         })
-      })
+      }
 
       return uniqueCategories
     }
@@ -233,7 +237,7 @@ module.exports = exports = function(app) {
       }
     })
 
-    $scope.$on('ajaxContentLoaded', function(){
+    $scope.$on('$viewContentLoaded', function(){
       var temp = ""
       var tempData
       var filteredTempData
@@ -349,7 +353,7 @@ module.exports = exports = function(app) {
         })
         changedData = changedData_2
       }
-      return changedData;
+      return changedData
     }
   }])
 }
