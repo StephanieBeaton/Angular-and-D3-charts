@@ -108,7 +108,7 @@ module.exports = exports = function(app) {
           $scope.customersDropDown    = $scope.dropDownData.DropDowns.Customers
           $scope.salesmenDropDown     = $scope.dropDownData.DropDowns.Salesmen
 
-          $scope.$emit('$viewContentLoaded')
+          $rootScope.$emit('ajaxContentLoaded')
         }
       }
       wait()
@@ -147,16 +147,25 @@ module.exports = exports = function(app) {
 
       $scope.dropdownvalues = dropdownvalues
 
+      function startPage(viewName) {
+        startUpdates(resources[viewName])
+
+        tempData = deepCopyArray($scope.customerData)
+        temp = filterD3Data(tempData, "customer")
+
+        if ($scope.d3Object) {
+          $scope.d3Object.buildChart(temp)
+        } else {
+          $scope.d3Object = D3('pie', 500, 500, temp)
+        }
+      }
+
       if (!(dropdownvalues.selectedSalesmen   === undefined &&
           dropdownvalues.selectedCustomer     === undefined &&
           dropdownvalues.selectedProductType  === undefined &&
           dropdownvalues.selectedDistributor  === undefined )) {
         if ($scope.currentView === 'overview') {
           startUpdates(resources.customer)
-
-          if ($scope.customerUpdates !== null) {
-            stopUpdates($scope.customerUpdates)
-          }
 
           tempData = deepCopyArray($scope.customerData)
           temp = filterD3Data(tempData, "customer")
@@ -170,10 +179,6 @@ module.exports = exports = function(app) {
         } else if ($scope.currentView === 'customer') {
           startUpdates(resources.customer)
 
-          if ($scope.customerUpdates !== null) {
-            stopUpdates($scope.customerUpdates)
-          }
-
           tempData = deepCopyArray($scope.customerData)
           temp = filterD3Data(tempData, "customer")
 
@@ -185,7 +190,6 @@ module.exports = exports = function(app) {
         } else {
           startUpdates(resources.salespeople)
 
-
           tempData = deepCopyArray($scope.salespeopleData)
           temp = filterD3Data(tempData, "salespeople")
 
@@ -193,10 +197,6 @@ module.exports = exports = function(app) {
             $scope.d3Object.buildChart(temp)
           } else {
             $scope.d3Object = D3('stacked-chart', 900, 500, temp)
-          }
-
-          if ($scope.salespeopleUpdates !== null){
-            stopUpdates($scope.salespeopleUpdates)
           }
         }
       }
@@ -237,7 +237,7 @@ module.exports = exports = function(app) {
       }
     })
 
-    $scope.$on('$viewContentLoaded', function(){
+    $rootScope.$on('ajaxContentLoaded', function(){
       var temp = ""
       var tempData
       var filteredTempData
