@@ -44,12 +44,14 @@ module.exports = exports = function(app) {
       //     height = 250,
       //     radius = Math.min(width, height) / 2;
       var path;
+      var self = this;
 
       // Color range to use for now.
       var color = d3.scale.category20c();
 
       var arc = d3.svg.arc()
-      .outerRadius(this.radius - 10);
+      .outerRadius(this.radius - 10)
+      .innerRadius(0);
 
       // compute arc angles from data
       var pie = d3.layout.pie()
@@ -59,14 +61,15 @@ module.exports = exports = function(app) {
           total += d.Totals[k];
         }
         return total;
-      });
+      })
+      .sort(null);
 
       var svg;
 
       if (!d3.select('.g-child-of-svg').empty()){
         svg = d3.select('.g-child d-of-svg');
 
-        change(data, this);
+        change(data);
 
       } else {
         var tip = d3.tip()
@@ -75,22 +78,25 @@ module.exports = exports = function(app) {
 
         svg = d3.select('#graph')
         .append('svg:svg')
-        .data(data)
         .attr('width', this.width)
         .attr('height', this.height)
         .append('svg:g')
         .attr('class', 'g-child-of-svg')
         .attr('transform', 'translate(' + this.radius + ',' + this.radius + ')')
 
-        path = svg.selectAll("path")
+        path = svg.selectAll("g.pie-piece")
         .data(pie(data))
         .enter()
-        .append("path");
+        .append("g")
+        .attr('class', 'pie-piece');
 
-        path.transition()
-        .duration(500)
+        path.append("path");
+        path.append("text")
+        .attr("text-anchor", "middle");
+
+        path.select("path")
         .attr("fill", function(d, i) {
-          return color(d.data.Name);     //  d.Name ==>  d.data.Name
+          return color(i);
         })
         .attr("d", arc)
         .each(function(d) {
@@ -98,11 +104,36 @@ module.exports = exports = function(app) {
         }); // store the initial angles
 
         this.path = path;
+
+        addLabels();
       }
 
-      function change(data, d3Object) {
-        d3Object.path.data(pie(data));
-        d3Object.path.transition().duration(750).attrTween("d", arcTween); // redraw the arcs
+      // convert from radians to degrees
+      function toDegrees(d) {
+        var a = (d.startAngle + d.endAngle) * 90 / Math.PI - 90;
+        return a > 90 ? a - 180 : a;
+      }
+
+      function addLabels() {
+        self.path.select("text")
+        .transition()
+        .duration(750)
+        .attr("transform", function(d) {
+          return "translate(" + arc.centroid(d) + ") rotate(" + toDegrees(d) + ")";
+        })
+        .text(function(d) {
+          var total = 0;
+          for (var k in d.data.Totals) {
+            total += d.data.Totals[k];
+          }
+          if (total > 0) return d.data.Name + ": $" + parseFloat(total).toFixed(2);
+        });
+      }
+
+      function change(data) {
+        self.path.data(pie(data)).enter();
+        self.path.select("path").transition().duration(750).attrTween("d", arcTween); // redraw the arcs
+        addLabels();
       }
 
       // Store the displayed angles in _current.
@@ -143,11 +174,15 @@ module.exports = exports = function(app) {
       labelXOffset = 3,
       bottomGutter = 150,
       color = this.color,
-      // TODO: maybe abstract out any scale and axis functionality
-      // that might be used by multiple chart types
+      yScaleMax = d3.max(data, function(d) {
+        var total = 0;
+        for (var k in d.Totals) {
+          total += d.Totals[k];
+        }
+        return total;
+      }),
       yScale = d3.scale.linear()
-      // arbitrary domain
-      .domain([0, 30000])
+      .domain([0, yScaleMax + (0.08 * yScaleMax)])
       .range([this.height - bottomGutter, 10]),
       yAxis = d3.svg.axis()
       .scale(yScale)
@@ -190,6 +225,7 @@ module.exports = exports = function(app) {
         for (var k in d.Totals) {
           total += d.Totals[k];
         }
+        // just in case a negative value appears in the data:
         return total >= 0 ? self.height - bottomGutter - yScale(total) : 0;
       })
       .transition()
@@ -425,7 +461,8 @@ module.exports = exports = function(app) {
       // set y domain ...
       // ... iterate thru the objects in data array
       // ... Find the  max value with key = "total"
-      y.domain([0, d3.max(data, function(d) { return d.total; })]);
+      var yScaleMax = d3.max(data, function(d) { return d.total; });
+      y.domain([0, yScaleMax + (0.08 * yScaleMax)]);
 
       // add x axis
       var x_axis = svg.select(".x");
