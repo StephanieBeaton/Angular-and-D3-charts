@@ -95,8 +95,6 @@ module.exports = exports = function(app) {
         .attr("text-anchor", "middle");
 
         path.select("path")
-        .transition()
-        .duration(500)
         .attr("fill", function(d, i) {
           return color(i);
         })
