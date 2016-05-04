@@ -62,7 +62,15 @@ module.exports = exports = function(app) {
         }
         return total;
       })
-      .sort(null);
+      .sort(function(a, b) {
+        if(!(a.Totals.length > 0 && b.Totals.length > 0)) {
+          return Object.keys(b.Totals).reduce(function(prev, curr, i, arr) {
+            return  prev + b.Totals[curr]
+          }, 0) - Object.keys(a.Totals).reduce(function(prev, curr, i, arr) {
+            return prev + a.Totals[curr]
+          }, 0)
+        } else return a.Totals.length - b.Totals.length;
+      });
 
       var svg;
 
@@ -206,7 +214,16 @@ module.exports = exports = function(app) {
       }
 
       var gBar = this.svg.selectAll("g.bar")
-      .data(data);
+      .data(data)
+      .sort(function(a, b) {
+        if(!(a.Totals.length > 0 && b.Totals.length > 0)) {
+          return Object.keys(b.Totals).reduce(function(prev, curr, i, arr) {
+            return  prev + b.Totals[curr]
+          }, 0) - Object.keys(a.Totals).reduce(function(prev, curr, i, arr) {
+            return prev + a.Totals[curr]
+          }, 0)
+        } else return a.Totals.length - b.Totals.length;
+      });
 
       gBar
       .enter()

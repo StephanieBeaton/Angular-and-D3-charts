@@ -59,7 +59,10 @@ module.exports = exports = function(app) {
       }
     })
 
-    $rootScope.$on('ajaxContentLoaded', function() {
+    $rootScope.$on('ajaxContentLoaded', drawWatch)
+    $rootScope.$on('$viewContentLoaded', drawWatch)
+
+    function drawWatch() {
       var temp = ""
       var tempData
       var filteredTempData
@@ -105,7 +108,7 @@ module.exports = exports = function(app) {
         $scope.$watch('selectedProductType', watchForDropDownChanges)
         $scope.$watch('selectedDistributor', watchForDropDownChanges)
       }
-    })
+    }
 
     function startUpdates(resourceObj) {
       $scope[resourceObj.name + "Updates"] = setInterval(function() {
@@ -257,10 +260,11 @@ module.exports = exports = function(app) {
         tempData = deepCopyArray($scope.customerData)
         temp = filterD3Data(tempData, "customer")
 
-        if ($scope.d3Object) {
+        if ($scope.d3Pie) {
+          $scope.d3Object = $scope.d3Pie
           $scope.d3Object.buildChart(temp)
         } else {
-          $scope.d3Object = D3('pie', 500, 500, temp)
+          $scope.d3Pie = $scope.d3Object = D3('pie', 500, 500, temp)
         }
 
       } else if ($scope.currentView === 'customer') {
@@ -269,21 +273,23 @@ module.exports = exports = function(app) {
         tempData = deepCopyArray($scope.customerData)
         temp = filterD3Data(tempData, "customer")
 
-        if ($scope.d3Object) {
+        if ($scope.d3Bar) {
+          $scope.d3Object = $scope.d3Bar
           $scope.d3Object.buildChart(temp)
         } else {
-          $scope.d3Object = D3('bar', 800, 500, temp)
+          $scope.d3Bar = $scope.d3Object = D3('bar', 800, 500, temp)
         }
-      } else {
+      } else if($scope.currentView === 'salespeople') {
         startUpdates(resources.salespeople)
 
         tempData = deepCopyArray($scope.salespeopleData)
         temp = filterD3Data(tempData, "salespeople")
 
-        if ($scope.d3Object) {
+        if ($scope.d3Stack) {
+          $scope.d3Object = $scope.d3Stack
           $scope.d3Object.buildChart(temp)
         } else {
-          $scope.d3Object = D3('stacked-chart', 900, 500, temp)
+          $scope.d3Stack = $scope.d3Object = D3('stacked-chart', 900, 500, temp)
         }
       }
     }
