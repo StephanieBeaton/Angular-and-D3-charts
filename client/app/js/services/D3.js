@@ -62,12 +62,20 @@ module.exports = exports = function(app) {
         }
         return total;
       })
-      .sort(null);
+      .sort(function(a, b) {
+        if(!(a.Totals.length > 0 && b.Totals.length > 0)) {
+          return Object.keys(b.Totals).reduce(function(prev, curr, i, arr) {
+            return  prev + b.Totals[curr]
+          }, 0) - Object.keys(a.Totals).reduce(function(prev, curr, i, arr) {
+            return prev + a.Totals[curr]
+          }, 0)
+        } else return a.Totals.length - b.Totals.length;
+      });
 
       var svg;
 
       if (!d3.select('.g-child-of-svg').empty()){
-        svg = d3.select('.g-child-of-svg');
+        svg = d3.select('.g-child d-of-svg');
 
         change(data);
 
@@ -206,7 +214,16 @@ module.exports = exports = function(app) {
       }
 
       var gBar = this.svg.selectAll("g.bar")
-      .data(data);
+      .data(data)
+      .sort(function(a, b) {
+        if(!(a.Totals.length > 0 && b.Totals.length > 0)) {
+          return Object.keys(b.Totals).reduce(function(prev, curr, i, arr) {
+            return  prev + b.Totals[curr]
+          }, 0) - Object.keys(a.Totals).reduce(function(prev, curr, i, arr) {
+            return prev + a.Totals[curr]
+          }, 0)
+        } else return a.Totals.length - b.Totals.length;
+      });
 
       gBar
       .enter()
@@ -335,7 +352,7 @@ module.exports = exports = function(app) {
 
       //   There are 7 product type items,  so there must be 7 matching colors only
       //
-      var colorArray = ["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"];
+      var colorArray = ["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00", "#4af872"];
       var color = d3.scale.ordinal()
       .range(colorArray);
 
@@ -419,12 +436,12 @@ module.exports = exports = function(app) {
       color.domain(productTypes);
 
       // for each object in the data array (d)
-      // .. create cummulativeSales array and sort it by productVolume
+      // .. create cumulativeSales array and sort it by productVolume
       data.forEach(function(d) {
-        d.cummulativeSales = color.domain().map(function(name) { return {name: name, y0: 0,  productVolume: +d.Totals[name], y1: 0}; });
+        d.cumulativeSales = color.domain().map(function(name) { return {name: name, y0: 0,  productVolume: +d.Totals[name], y1: 0}; });
 
-        // sort items in cummulativeSales array by productVolume descending
-        d.cummulativeSales.sort(function(a, b) { return b.productVolume - a.productVolume;});
+        // sort items in cumulativeSales array by productVolume descending
+        d.cumulativeSales.sort(function(a, b) { return b.productVolume - a.productVolume;});
 
       });
 
@@ -432,7 +449,7 @@ module.exports = exports = function(app) {
       // calculate  y0 and y1
       //
       // ... add new key:value pairs to the object
-      // ...   cummulativeSales:   an array of objects    (changed  ages --> cummulativeSales)
+      // ...   cumulativeSales:   an array of objects    (changed  ages --> cumulativeSales)
       // ...   total:  999
       data.forEach(function(d) {
         var y0 = 0;
@@ -442,12 +459,12 @@ module.exports = exports = function(app) {
         // ... and calculate running totals of data counts of people in the age categories
         // ... These are the tops and bottoms of the "stripes" in the column
         // ... in data units (not translated into y coordinates)
-        // d.cummulativeSales is an array of objects
-        // Each d.cummulativeSales object represents one stripe in the column
-        d.cummulativeSales = d.cummulativeSales.map(function(dObj) { return {name: dObj.name, y0: y0,  productVolume: dObj.productVolume, y1: y0 += dObj.productVolume}; });
+        // d.cumulativeSales is an array of objects
+        // Each d.cumulativeSales object represents one stripe in the column
+        d.cumulativeSales = d.cumulativeSales.map(function(dObj) { return {name: dObj.name, y0: y0,  productVolume: dObj.productVolume, y1: y0 += dObj.productVolume}; });
 
         // top of column in data values (not in y coordinates)
-        d.total = d.cummulativeSales[d.cummulativeSales.length - 1].y1;
+        d.total = d.cumulativeSales[d.cumulativeSales.length - 1].y1;
       });
 
       // sort the objects in "data" array in desc order by data values of the top of the column
@@ -567,16 +584,16 @@ module.exports = exports = function(app) {
       // ===========================================================
 
       // now put set of rect element inside each g element
-      //  Iterates over the cummulativeSales array and adds one rect per cummulativeSales element
+      //  Iterates over the cumulativeSales array and adds one rect per cumulativeSales element
 
       // ... rect element has width and height
       // Inherits  data object from parent element
       //
-      //  cummulativeSales array elements are the data here
+      //  cumulativeSales array elements are the data here
 
 
       // state.selectAll("rect")
-      //     .data(function(d) { return d.cummulativeSales; })
+      //     .data(function(d) { return d.cumulativeSales; })
       //   .enter().append("rect")
       //     .transition().duration(750)
       //     .attr("width", x.rangeBand())
@@ -586,7 +603,7 @@ module.exports = exports = function(app) {
       //
 
       var bar = state.selectAll("rect")
-      .data(function(d) { return d.cummulativeSales; });  // doesn't this need another function ?
+      .data(function(d) { return d.cumulativeSales; });  // doesn't this need another function ?
 
       // new data
       bar.enter().append("rect")

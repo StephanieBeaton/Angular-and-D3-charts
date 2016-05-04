@@ -10,7 +10,14 @@ module.exports = function(app) {
       }
 
       return inputArray.filter(function(v) {
-        return Object.keys(v.Totals).length > 0
+        var totalSum = 0
+        var keyArr = Object.keys(v.Totals)
+
+        for(var key in keyArr) {
+          totalSum += v.Totals[keyArr[key]]
+        }
+
+        return totalSum > 0
       })
     }
   })

@@ -3,13 +3,13 @@ module.exports = exports = function(app) {
   app.directive('quotesTable', ['Resource', function(Resource) {
     function link($scope, el, attr) {
     	// NOTE: these colors match D3's category20c() set
-    	$scope.cellColors = ["#3182bd", 
+    	$scope.cellColors = ["#3182bd",
     											 "#6baed6",
     											 "#9ecae1",
-    											 "#c6dbef", 
-    											 "#e6550d", 
-    											 "#fd8d3c", 
-    											 "#fdae6b", 
+    											 "#c6dbef",
+    											 "#e6550d",
+    											 "#fd8d3c",
+    											 "#fdae6b",
     											 "#fdd0a2",
 													 "#31a354",
 													 "#74c476",
@@ -23,12 +23,8 @@ module.exports = exports = function(app) {
 													 "#969696",
 													 "#bdbdbd",
 													 "#d9d9d9"];
-
-      Resource('./data/ordersByQuote.json').get(function(err, data) {
-      	$scope.quotesData = data;
-      });
     };
-    
+
     return {
       link: link,
       restrict: "E",

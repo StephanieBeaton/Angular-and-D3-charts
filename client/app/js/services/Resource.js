@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 //  This is "cb" passed in from  D3.js  buildChart( )
 //
@@ -10,8 +10,17 @@
 //       }
 
 
-var success = function(cb) { return function(res) { cb(null, res.data); }; };
-var failure = function(cb) { return function(res) { cb(res); }; };
+var success = function(cb) {
+  return function(res) {
+    cb(null, res.data)
+  }
+}
+
+var failure = function(cb) {
+  return function(res) {
+    cb(res)
+  }
+}
 
 module.exports = exports = function(app) {
   app.factory('Resource', ['$http', function($http) {
@@ -26,14 +35,15 @@ module.exports = exports = function(app) {
       //  When migrated to production  "localhost:5000" will be fasterbids.com
       //      fasterbids.com/DataAccess/getordersbysalesperson?USERkey=EP65g4K-8Fg67
       //
-      this.resource = resource;
-
-    };
+      this.resource = resource
+    }
+    
     Resource.prototype.get = function(cb) {
-      $http.get(this.resource).then(success(cb), failure(cb));
-    };
+      $http.get(this.resource).then(success(cb), failure(cb))
+    }
+
     return function(resource) {
-      return new Resource(resource);
-    };
-  }]);
-};
+      return new Resource(resource)
+    }
+  }])
+}
