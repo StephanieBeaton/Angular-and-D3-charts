@@ -174,11 +174,15 @@ module.exports = exports = function(app) {
       labelXOffset = 3,
       bottomGutter = 150,
       color = this.color,
-      // TODO: maybe abstract out any scale and axis functionality
-      // that might be used by multiple chart types
+      yScaleMax = d3.max(data, function(d) {
+        var total = 0;
+        for (var k in d.Totals) {
+          total += d.Totals[k];
+        }
+        return total;
+      }),
       yScale = d3.scale.linear()
-      // arbitrary domain
-      .domain([0, 30000])
+      .domain([0, yScaleMax + (0.08 * yScaleMax)])
       .range([this.height - bottomGutter, 10]),
       yAxis = d3.svg.axis()
       .scale(yScale)
@@ -221,6 +225,7 @@ module.exports = exports = function(app) {
         for (var k in d.Totals) {
           total += d.Totals[k];
         }
+        // just in case a negative value appears in the data:
         return total >= 0 ? self.height - bottomGutter - yScale(total) : 0;
       })
       .transition()
@@ -456,7 +461,8 @@ module.exports = exports = function(app) {
       // set y domain ...
       // ... iterate thru the objects in data array
       // ... Find the  max value with key = "total"
-      y.domain([0, d3.max(data, function(d) { return d.total; })]);
+      var yScaleMax = d3.max(data, function(d) { return d.total; });
+      y.domain([0, yScaleMax + (0.08 * yScaleMax)]);
 
       // add x axis
       var x_axis = svg.select(".x");
