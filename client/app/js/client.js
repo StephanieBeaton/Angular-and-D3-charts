@@ -1,13 +1,20 @@
-'use strict';
-const angular = require('angular');
-require('angular-ui-router');
-const app = angular.module('app', ['ui.router']);
-require('./services')(app);
-require('./controllers')(app);
-require('./directives')(app);
-app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
-function($stateProvider, $urlRouterProvider, $locationProvider) {
+'use strict'
+
+const angular = require('angular')
+require('angular-local-storage')
+require('angular-spinners')
+require('angular-ui-router')
+
+const app = angular.module('app', ['ui.router', 'angularSpinners', 'LocalStorageModule'])
+
+require('./services')(app)
+require('./controllers')(app)
+require('./directives')(app)
+
+app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', 'localStorageServiceProvider',
+function($stateProvider, $urlRouterProvider, $locationProvider, localStorageServiceProvider) {
   $urlRouterProvider.otherwise('/overview')
+
   $stateProvider
     .state('overview', {
       url: '/overview',
@@ -22,5 +29,9 @@ function($stateProvider, $urlRouterProvider, $locationProvider) {
       templateUrl: 'templates/salespeople.html',
       controller: 'appController'
     })
+
   $locationProvider.html5Mode({ enabled: true, requireBase: false })
+
+  localStorageServiceProvider
+    .setPrefix('fasterViz')
 }])

@@ -2,14 +2,14 @@
 
 module.exports = exports = function(app) {
 
-  app.controller('appController', ['$rootScope', '$scope', '$http', 'Resource', 'D3', function($rootScope, $scope, $http, Resource, D3) {
+  app.controller('appController', ['$rootScope', '$scope', '$location', '$http', 'Resource', 'D3', 'spinnerService', 'localStorageService',
+  function($rootScope, $scope, $location, $http, Resource, D3, spinnerService, localStorageService) {
+
+    $scope.d3Object = null
+    $scope.currentView = $location.path().slice(1)
 
     // TODO: This should be gotten from the server for each user
     var userKey = "EP65g4K-8Fg67"
-
-    function init() {
-      getDataFromServer()
-    }
 
     var overviewResource = null
 
@@ -20,212 +20,26 @@ module.exports = exports = function(app) {
 
     var resources = {}
 
-    function startUpdates(resourceObj) {
-      $scope[resourceObj.name + "Updates"] = setInterval(function() {
-        resourceObj.get(function(err, data) {
-          $scope[resourceObj.name + "Data"] = data
-        })
-      }, resourceObj.updateInterval)
+    resources.salespeople = {
+      name: "salespeople",
+      resource: $scope.salespeopleResource,
+      updateInterval: 6000000
     }
-
-    function stopUpdates(updater) {
-      if (typeof updater !== 'undefined') clearInterval(updater)
+    resources.customer = {
+      name: "customer",
+      resource: $scope.customerResource,
+      updateInterval: 6000000
     }
-
-    function getDataFromServer() {
-      var loaded = {
-        quote: false,
-        sales: false,
-        custo: false,
-        drops: false
-      }
-
-      var errors = []
-
-      $scope.quoteResource.get(
-        function(err, res) {
-          if(err) errors.push(err)
-          if(res) $scope.quoteData = res
-          $rootScope.$emit('dataUpdated', res)
-          loaded.quote = true
-        }
-      )
-
-      $scope.salespeopleResource.get(
-        function(err, res) {
-          if(err) errors.push(err)
-          if(res) $scope.salespeopleData = res
-          $rootScope.$emit('dataUpdated', res)
-          loaded.sales = true
-        }
-      )
-
-      $scope.customerResource.get(
-        function(err, res) {
-          if(err) errors.push(err)
-          if(res) $scope.customerData = res
-          $rootScope.$emit('dataUpdated', res)
-          loaded.custo = true
-        }
-      )
-
-      $scope.dropDownResource.get(
-        function(err, res) {
-          if(err) errors.push(err)
-          if(res) $scope.dropDownData = res
-          $rootScope.$emit('dataUpdated', res)
-          loaded.drops = true
-        }
-      )
-
-      function wait() {
-        if (!(loaded.quote && loaded.sales && loaded.custo && loaded.drops)) {
-          setTimeout(wait, 500)
-        } else {
-          resources.salespeople = {
-            name: "salespeople",
-            resource: $scope.salespeopleResource,
-            updateInterval: 6000000
-          }
-          resources.customer = {
-            name: "customer",
-            resource: $scope.customerResource,
-            updateInterval: 6000000
-          }
-          resources.dropdown = {
-            name: "dropdown",
-            resource: $scope.dropDownResource,
-            updateInterval: 6000000
-          }
-          resources.quote = {
-            name: "quote",
-            resource: $scope.quoteResource,
-            updateInterval: 6000000
-          }
-
-          $scope.productTypesDropDown = $scope.dropDownData.DropDowns.Products
-          $scope.distributorsDropDown = $scope.dropDownData.DropDowns.Distributors
-          $scope.customersDropDown    = $scope.dropDownData.DropDowns.Customers
-          $scope.salesmenDropDown     = $scope.dropDownData.DropDowns.Salesmen
-
-          $rootScope.$emit('ajaxContentLoaded')
-        }
-      }
-      wait()
+    resources.dropdown = {
+      name: "dropdown",
+      resource: $scope.dropDownResource,
+      updateInterval: 6000000
     }
-    init()
-
-    function deepCopyObject(itemObj) {
-      var temp = {}
-      for (var property in itemObj) {
-        if (itemObj.hasOwnProperty(property)) {
-          if (typeof itemObj[property] === "object"){
-            temp[property] = deepCopyObject(itemObj[property])
-          } else {
-            temp[property] = itemObj[property]
-          }
-        }
-      }
-      return temp
+    resources.quote = {
+      name: "quote",
+      resource: $scope.quoteResource,
+      updateInterval: 6000000
     }
-
-    function deepCopyArray(myArray) {
-      var tempArray = myArray.map(function(itemObj) {
-        return deepCopyObject(itemObj)
-      })
-      return tempArray
-    }
-
-    function watchForDropDownChanges() {
-      var temp
-      var tempData
-      var dropdownvalues = {}
-      dropdownvalues.selectedSalesmen     = $scope.selectedSalesmen
-      dropdownvalues.selectedCustomer     = $scope.selectedCustomer
-      dropdownvalues.selectedProductType  = $scope.selectedProductType
-      dropdownvalues.selectedDistributor  = $scope.selectedDistributor
-
-      $scope.dropdownvalues = dropdownvalues
-
-      function startPage(viewName) {
-        startUpdates(resources[viewName])
-
-        tempData = deepCopyArray($scope.customerData)
-        temp = filterD3Data(tempData, "customer")
-
-        if ($scope.d3Object) {
-          $scope.d3Object.buildChart(temp)
-        } else {
-          $scope.d3Object = D3('pie', 500, 500, temp)
-        }
-      }
-
-      if (!(dropdownvalues.selectedSalesmen   === undefined &&
-          dropdownvalues.selectedCustomer     === undefined &&
-          dropdownvalues.selectedProductType  === undefined &&
-          dropdownvalues.selectedDistributor  === undefined )) {
-        if ($scope.currentView === 'overview') {
-          startUpdates(resources.customer)
-
-          tempData = deepCopyArray($scope.customerData)
-          temp = filterD3Data(tempData, "customer")
-
-          if ($scope.d3Object) {
-            $scope.d3Object.buildChart(temp)
-          } else {
-            $scope.d3Object = D3('pie', 500, 500, temp)
-          }
-
-        } else if ($scope.currentView === 'customer') {
-          startUpdates(resources.customer)
-
-          tempData = deepCopyArray($scope.customerData)
-          temp = filterD3Data(tempData, "customer")
-
-          if ($scope.d3Object) {
-            $scope.d3Object.buildChart(temp)
-          } else {
-            $scope.d3Object = D3('bar', 800, 500, temp)
-          }
-        } else {
-          startUpdates(resources.salespeople)
-
-          tempData = deepCopyArray($scope.salespeopleData)
-          temp = filterD3Data(tempData, "salespeople")
-
-          if ($scope.d3Object) {
-            $scope.d3Object.buildChart(temp)
-          } else {
-            $scope.d3Object = D3('stacked-chart', 900, 500, temp)
-          }
-        }
-      }
-    }
-
-    var getUniqueCategories = function(data) {
-      var uniqueCategories = [],
-          seenCategories = {}
-
-      if(Array.isArray(data)) {
-        data.forEach(function(item) {
-          Object.keys(item.Totals).forEach(function(key) {
-            if (!seenCategories.hasOwnProperty(key)) {
-              uniqueCategories.push(key)
-              seenCategories[key] = true
-            }
-          })
-        })
-      }
-
-      return uniqueCategories
-    }
-
-    $rootScope.$on('dataUpdated', function(evt, data) {
-      $scope.currentData = data;
-      $scope.uniqueCategories = getUniqueCategories(data);
-    });
-
-    $scope.d3Object = null
 
     $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams, options) {
       if (toState.name === 'overview') {
@@ -290,6 +104,202 @@ module.exports = exports = function(app) {
         temp = 'salespeople'
       }
     })
+
+    function startUpdates(resourceObj) {
+      $scope[resourceObj.name + "Updates"] = setInterval(function() {
+        resourceObj.get(function(err, data) {
+          $scope[resourceObj.name + "Data"] = data
+        })
+      }, resourceObj.updateInterval)
+    }
+
+    function stopUpdates(updater) {
+      if (typeof updater !== 'undefined') clearInterval(updater)
+    }
+
+    function getDataFromServer() {
+      var loaded = {
+        quote: false,
+        sales: false,
+        custo: false,
+        drops: false
+      }
+
+      if(localStorageService.keys().length !== 0) {
+        $scope.quoteData = localStorageService.get('quoteData')
+        $rootScope.$emit('quotesUpdated', $scope.quoteData)
+        loaded.quote = true
+
+        $scope.salespeopleData = localStorageService.get('salespeopleData')
+        $rootScope.$emit('salespeopleUpdated', $scope.salespeopleData)
+        loaded.sales = true
+
+        $scope.customerData = localStorageService.get('customerData')
+        $rootScope.$emit('customersUpdated', $scope.customerData)
+        loaded.custo = true
+
+        $scope.dropDownData = localStorageService.get('dropDownData')
+        $rootScope.$emit('dropDownsUpdated', $scope.dropDownData)
+        loaded.drops = true
+
+        $scope.productTypesDropDown = $scope.dropDownData.DropDowns.Products
+        $scope.distributorsDropDown = $scope.dropDownData.DropDowns.Distributors
+        $scope.customersDropDown    = $scope.dropDownData.DropDowns.Customers
+        $scope.salesmenDropDown     = $scope.dropDownData.DropDowns.Salesmen
+
+        $rootScope.$emit('ajaxContentLoaded')
+        return
+      }
+
+      var errors = []
+
+      $scope.quoteResource.get(
+        function(err, res) {
+          if(err) errors.push(err)
+          if(res) {
+            $scope.quoteData = res
+            localStorageService.set('quoteData', res)
+          }
+          $rootScope.$emit('quotesUpdated', res)
+          loaded.quote = true
+        }
+      )
+
+      $scope.salespeopleResource.get(
+        function(err, res) {
+          if(err) errors.push(err)
+          if(res) {
+            $scope.salespeopleData = res
+            localStorageService.set('salespeopleData', res)
+          }
+          $rootScope.$emit('salespeopleUpdated', res)
+          loaded.sales = true
+        }
+      )
+
+      $scope.customerResource.get(
+        function(err, res) {
+          if(err) errors.push(err)
+          if(res) {
+            $scope.customerData = res
+            localStorageService.set('customerData', res)
+          }
+          $rootScope.$emit('customersUpdated', res)
+          loaded.custo = true
+        }
+      )
+
+      $scope.dropDownResource.get(
+        function(err, res) {
+          if(err) errors.push(err)
+          if(res) {
+            $scope.dropDownData = res
+            localStorageService.set('dropDownData', res)
+          }
+          $rootScope.$emit('dropDownsUpdated', res)
+          loaded.drops = true
+        }
+      )
+
+      function wait() {
+        if (!(loaded.quote && loaded.sales && loaded.custo && loaded.drops)) {
+          setTimeout(wait, 500)
+        } else {
+          $scope.productTypesDropDown = $scope.dropDownData.DropDowns.Products
+          $scope.distributorsDropDown = $scope.dropDownData.DropDowns.Distributors
+          $scope.customersDropDown    = $scope.dropDownData.DropDowns.Customers
+          $scope.salesmenDropDown     = $scope.dropDownData.DropDowns.Salesmen
+
+          $rootScope.$emit('ajaxContentLoaded')
+        }
+      }
+      wait()
+    }
+
+    getDataFromServer()
+
+    function deepCopyObject(itemObj) {
+      var temp = {}
+      for (var property in itemObj) {
+        if (itemObj.hasOwnProperty(property)) {
+          if (typeof itemObj[property] === "object"){
+            temp[property] = deepCopyObject(itemObj[property])
+          } else {
+            temp[property] = itemObj[property]
+          }
+        }
+      }
+      return temp
+    }
+
+    function deepCopyArray(myArray) {
+      var tempArray = myArray.map(function(itemObj) {
+        return deepCopyObject(itemObj)
+      })
+      return tempArray
+    }
+
+    function watchForDropDownChanges() {
+      var temp
+      var tempData
+      var dropdownvalues = {}
+      dropdownvalues.selectedSalesmen     = $scope.selectedSalesmen
+      dropdownvalues.selectedCustomer     = $scope.selectedCustomer
+      dropdownvalues.selectedProductType  = $scope.selectedProductType
+      dropdownvalues.selectedDistributor  = $scope.selectedDistributor
+
+      $scope.dropdownvalues = dropdownvalues
+
+      if ($scope.currentView === 'overview') {
+        startUpdates(resources.customer)
+
+        tempData = deepCopyArray($scope.customerData)
+        temp = filterD3Data(tempData, "customer")
+
+        if ($scope.d3Object) {
+          $scope.d3Object.buildChart(temp)
+        } else {
+          $scope.d3Object = D3('pie', 500, 500, temp)
+        }
+
+      } else if ($scope.currentView === 'customer') {
+        startUpdates(resources.customer)
+
+        tempData = deepCopyArray($scope.customerData)
+        temp = filterD3Data(tempData, "customer")
+
+        if ($scope.d3Object) {
+          $scope.d3Object.buildChart(temp)
+        } else {
+          $scope.d3Object = D3('bar', 800, 500, temp)
+        }
+      } else {
+        startUpdates(resources.salespeople)
+
+        tempData = deepCopyArray($scope.salespeopleData)
+        temp = filterD3Data(tempData, "salespeople")
+
+        if ($scope.d3Object) {
+          $scope.d3Object.buildChart(temp)
+        } else {
+          $scope.d3Object = D3('stacked-chart', 900, 500, temp)
+        }
+      }
+    }
+
+    $scope.uniqueCategories = (function() {
+      var uniqueCategories = [],
+          seenCategories = {}
+
+      $scope.dropDownData.DropDowns.Products.forEach(function(item) {
+        if (!seenCategories.hasOwnProperty(item.Name)) {
+          uniqueCategories.push(item.Name)
+          seenCategories[item.Name] = true
+        }
+      })
+
+      return uniqueCategories
+    })()
 
     function filterD3Data(data, dataType) {
       var changedData = []

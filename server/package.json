@@ -9,7 +9,6 @@
   },
   "author": "",
   "dependencies": {
-    "angular-spinners": "^3.1.2",
     "express": "^4.13.4",
     "serve-favicon": "^2.3.0"
   },
