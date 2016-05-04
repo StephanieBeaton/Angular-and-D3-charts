@@ -11,8 +11,11 @@ require('./services')(app)
 require('./controllers')(app)
 require('./directives')(app)
 
-app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', 'localStorageServiceProvider',
-function($stateProvider, $urlRouterProvider, $locationProvider, localStorageServiceProvider) {
+app.config(['$compileProvider', '$stateProvider', '$urlRouterProvider', '$locationProvider', 'localStorageServiceProvider',
+function($compileProvider, $stateProvider, $urlRouterProvider, $locationProvider, localStorageServiceProvider) {
+  // $compileProvider
+  //   .debugInfoEnabled(false)
+
   $urlRouterProvider.otherwise('/overview')
 
   $stateProvider

@@ -5,7 +5,11 @@ module.exports = exports = function(app) {
   app.controller('appController', ['$rootScope', '$scope', '$location', '$http', 'Resource', 'D3', 'spinnerService', 'localStorageService',
   function($rootScope, $scope, $location, $http, Resource, D3, spinnerService, localStorageService) {
 
-    $scope.d3Object = null
+    $scope.d3Object
+    $scope.d3Pie
+    $scope.d3Bar
+    $scope.d3Stack
+
     $scope.currentView = $location.path().slice(1)
 
     // TODO: This should be gotten from the server for each user
@@ -42,36 +46,36 @@ module.exports = exports = function(app) {
     }
 
     $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams, options) {
+      $scope.d3Object = null
       if (toState.name === 'overview') {
         $scope.currentView = 'overview'
+        $scope.d3Object = $scope.d3Pie
       } else if (toState.name === 'customer') {
         $scope.currentView = 'customer'
+        $scope.d3Object = $scope.d3Bar
       } else if (toState.name === 'salespeople') {
         $scope.currentView = 'salespeople'
+        $scope.d3Object = $scope.d3Stack
       }
     })
 
-    $rootScope.$on('ajaxContentLoaded', function(){
+    $rootScope.$on('ajaxContentLoaded', function() {
       var temp = ""
       var tempData
       var filteredTempData
-
-      if ($scope.salespeopleUpdates !== null) stopUpdates($scope.salespeopleUpdates)
-      if ($scope.customerUpdates !== null) stopUpdates($scope.customerUpdates)
 
       if ($scope.currentView === 'overview') {
         tempData = deepCopyArray($scope.customerData)
 
         filteredTempData = filterD3Data(tempData, "customer")
 
-        $scope.d3Object = D3('pie', 500, 500, filteredTempData)
+        $scope.d3Pie = $scope.d3Pie || D3('pie', 500, 500, filteredTempData)
+        $scope.d3Object = $scope.d3Pie
 
         $scope.$watch('selectedSalesmen', watchForDropDownChanges)
         $scope.$watch('selectedCustomer', watchForDropDownChanges)
         $scope.$watch('selectedProductType', watchForDropDownChanges)
         $scope.$watch('selectedDistributor', watchForDropDownChanges)
-
-        temp = 'customer'
 
       } else if ($scope.currentView === 'customer') {
 
@@ -79,14 +83,13 @@ module.exports = exports = function(app) {
 
         filteredTempData = filterD3Data(tempData, "customer")
 
-        $scope.d3Object = D3('bar', 800, 500, filteredTempData)
+        $scope.d3Bar = $scope.d3Bar || D3('bar', 800, 500, filteredTempData)
+        $scope.d3Object = $scope.d3Bar
 
         $scope.$watch('selectedSalesmen', watchForDropDownChanges)
         $scope.$watch('selectedCustomer', watchForDropDownChanges)
         $scope.$watch('selectedProductType', watchForDropDownChanges)
         $scope.$watch('selectedDistributor', watchForDropDownChanges)
-
-        temp = 'customer'
 
       } else if ($scope.currentView === 'salespeople') {
 
@@ -94,14 +97,13 @@ module.exports = exports = function(app) {
 
         filteredTempData = filterD3Data(tempData, "salespeople")
 
-        $scope.d3Object = D3('stacked-chart', 900, 500, filteredTempData)
+        $scope.d3Stack = $scope.d3Stack || D3('stacked-chart', 900, 500, filteredTempData)
+        $scope.d3Object = $scope.d3Stack
 
         $scope.$watch('selectedSalesmen', watchForDropDownChanges)
         $scope.$watch('selectedCustomer', watchForDropDownChanges)
         $scope.$watch('selectedProductType', watchForDropDownChanges)
         $scope.$watch('selectedDistributor', watchForDropDownChanges)
-
-        temp = 'salespeople'
       }
     })
 
@@ -124,8 +126,9 @@ module.exports = exports = function(app) {
         custo: false,
         drops: false
       }
+      var errors = []
 
-      if(localStorageService.keys().length !== 0) {
+      if(localStorageService.keys().length === 4) {
         $scope.quoteData = localStorageService.get('quoteData')
         $rootScope.$emit('quotesUpdated', $scope.quoteData)
         loaded.quote = true
@@ -149,71 +152,69 @@ module.exports = exports = function(app) {
 
         $rootScope.$emit('ajaxContentLoaded')
         return
+      } else {
+        $scope.quoteResource.get(
+          function(err, res) {
+            if(err) errors.push(err)
+            if(res) {
+              $scope.quoteData = res
+              localStorageService.set('quoteData', res)
+            }
+            $rootScope.$emit('quotesUpdated', res)
+            loaded.quote = true
+          }
+        )
+
+        $scope.salespeopleResource.get(
+          function(err, res) {
+            if(err) errors.push(err)
+            if(res) {
+              $scope.salespeopleData = res
+              localStorageService.set('salespeopleData', res)
+            }
+            $rootScope.$emit('salespeopleUpdated', res)
+            loaded.sales = true
+          }
+        )
+
+        $scope.customerResource.get(
+          function(err, res) {
+            if(err) errors.push(err)
+            if(res) {
+              $scope.customerData = res
+              localStorageService.set('customerData', res)
+            }
+            $rootScope.$emit('customersUpdated', res)
+            loaded.custo = true
+          }
+        )
+
+        $scope.dropDownResource.get(
+          function(err, res) {
+            if(err) errors.push(err)
+            if(res) {
+              $scope.dropDownData = res
+              localStorageService.set('dropDownData', res)
+            }
+            $rootScope.$emit('dropDownsUpdated', res)
+            loaded.drops = true
+          }
+        )
+
+        function wait() {
+          if (!(loaded.quote && loaded.sales && loaded.custo && loaded.drops)) {
+            setTimeout(wait, 500)
+          } else {
+            $scope.productTypesDropDown = $scope.dropDownData.DropDowns.Products
+            $scope.distributorsDropDown = $scope.dropDownData.DropDowns.Distributors
+            $scope.customersDropDown    = $scope.dropDownData.DropDowns.Customers
+            $scope.salesmenDropDown     = $scope.dropDownData.DropDowns.Salesmen
+
+            $rootScope.$emit('ajaxContentLoaded')
+          }
+        }
+        wait()
       }
-
-      var errors = []
-
-      $scope.quoteResource.get(
-        function(err, res) {
-          if(err) errors.push(err)
-          if(res) {
-            $scope.quoteData = res
-            localStorageService.set('quoteData', res)
-          }
-          $rootScope.$emit('quotesUpdated', res)
-          loaded.quote = true
-        }
-      )
-
-      $scope.salespeopleResource.get(
-        function(err, res) {
-          if(err) errors.push(err)
-          if(res) {
-            $scope.salespeopleData = res
-            localStorageService.set('salespeopleData', res)
-          }
-          $rootScope.$emit('salespeopleUpdated', res)
-          loaded.sales = true
-        }
-      )
-
-      $scope.customerResource.get(
-        function(err, res) {
-          if(err) errors.push(err)
-          if(res) {
-            $scope.customerData = res
-            localStorageService.set('customerData', res)
-          }
-          $rootScope.$emit('customersUpdated', res)
-          loaded.custo = true
-        }
-      )
-
-      $scope.dropDownResource.get(
-        function(err, res) {
-          if(err) errors.push(err)
-          if(res) {
-            $scope.dropDownData = res
-            localStorageService.set('dropDownData', res)
-          }
-          $rootScope.$emit('dropDownsUpdated', res)
-          loaded.drops = true
-        }
-      )
-
-      function wait() {
-        if (!(loaded.quote && loaded.sales && loaded.custo && loaded.drops)) {
-          setTimeout(wait, 500)
-        } else {
-          $scope.productTypesDropDown = $scope.dropDownData.DropDowns.Products
-          $scope.distributorsDropDown = $scope.dropDownData.DropDowns.Distributors
-          $scope.customersDropDown    = $scope.dropDownData.DropDowns.Customers
-          $scope.salesmenDropDown     = $scope.dropDownData.DropDowns.Salesmen
-
-          $rootScope.$emit('ajaxContentLoaded')
-        }
-      }
-      wait()
     }
 
     getDataFromServer()
